@@ -189,9 +189,9 @@ class SalesHistoryTab extends StatelessWidget {
                       topRight: Radius.circular(12),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Order No.',
@@ -201,7 +201,7 @@ class SalesHistoryTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Date & Time',
@@ -211,7 +211,7 @@ class SalesHistoryTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Items',
@@ -221,7 +221,7 @@ class SalesHistoryTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Payment',
@@ -235,7 +235,7 @@ class SalesHistoryTab extends StatelessWidget {
                         flex: 2,
                         child: Text(
                           'Amount',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),

@@ -99,14 +99,14 @@ class ActivityLogTab extends StatelessWidget {
                 icon: Icons.history,
               ),
               const SizedBox(width: 16),
-              _ActivityStatCard(
+              const _ActivityStatCard(
                 title: 'Sales Today',
                 count: '2',
                 color: Colors.green,
                 icon: Icons.point_of_sale,
               ),
               const SizedBox(width: 16),
-              _ActivityStatCard(
+              const _ActivityStatCard(
                 title: 'Last Active',
                 count: 'Today',
                 color: Colors.orange,

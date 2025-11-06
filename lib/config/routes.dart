@@ -1,8 +1,17 @@
+//employees
 import 'package:drink_your_wine_pos/screens/employees/add_employee_screen.dart';
 import 'package:drink_your_wine_pos/screens/employees/edit_employee_screen.dart';
 import 'package:drink_your_wine_pos/screens/employees/employee_profile_screen.dart';
 import 'package:drink_your_wine_pos/screens/employees/employees_screen.dart';
+//inventory
+import 'package:drink_your_wine_pos/screens/inventory/add_product_screen.dart';
+import 'package:drink_your_wine_pos/screens/inventory/edit_product_screen.dart';
+import 'package:drink_your_wine_pos/screens/inventory/inventory_screen.dart';
+//menu
+import 'package:drink_your_wine_pos/screens/menu/menu_screen.dart';
+//pos
 import 'package:drink_your_wine_pos/screens/pos/pos_screen.dart';
+//reports
 import 'package:drink_your_wine_pos/screens/reports/reports_screen.dart';
 import 'package:drink_your_wine_pos/widgets/employees/activity_log_tab.dart';
 import 'package:drink_your_wine_pos/widgets/employees/attendance_tab.dart';
@@ -20,10 +29,18 @@ class Routes {
   static const String dashboard = '/dashboard';
   static const String pos = '/pos';
   static const String checkout = '/checkout';
+  
+  // MENU ROUTES
+  static const String menu = '/menu';
+  static const String addMenuItem = '/menu/add';
+  static const String editMenuItem = '/menu/edit';
+  
+  // INVENTORY ROUTES
   static const String inventory = '/inventory';
   static const String addProduct = '/inventory/add';
   static const String editProduct = '/inventory/edit';
 
+  // EMPLOYEE ROUTES
   static const String employees = '/employees';
   static const String addEmployee = '/employees/add';
   static const String editEmployee = '/employees/edit';
@@ -33,6 +50,7 @@ class Routes {
   static const String salesHistory = '/employees/sales-history';
   static const String profileTab = '/employees/profile-tab';
 
+  // REPORTS & SETTINGS
   static const String reports = '/reports';
   static const String salesReport = '/reports/sales';
   static const String inventoryReport = '/reports/inventory';
@@ -52,6 +70,44 @@ class Routes {
 
       case pos:
         return MaterialPageRoute(builder: (_) => const POSScreen());
+
+      // MENU ROUTES
+      case menu:
+        return MaterialPageRoute(builder: (_) => const MenuScreen());
+
+      case addMenuItem:
+        // TODO: Create AddMenuItemScreen
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text('Add Menu Item Screen - Coming Soon'),
+            ),
+          ),
+        );
+
+      case editMenuItem:
+        // TODO: Create EditMenuItemScreen
+        final menuItemData = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text('Edit Menu Item Screen - Coming Soon'),
+            ),
+          ),
+        );
+
+      // INVENTORY ROUTES
+      case inventory:
+        return MaterialPageRoute(builder: (_) => const InventoryScreen());
+
+      case addProduct:
+        return MaterialPageRoute(builder: (_) => const AddProductScreen());
+
+      case editProduct:
+        final productData = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => EditProductScreen(productData: productData),
+        );
 
       // EMPLOYEE ROUTES
       case employees:
@@ -96,15 +152,12 @@ class Routes {
           builder: (_) => ProfileTab(employeeData: employeeData),
         );
 
-      // TODO: Add routes for other screens (reports, settings, etc.)
+      // REPORTS ROUTES
       case reports:
         return MaterialPageRoute(builder: (_) => const ReportsScreen());
-      // case salesReport:
-      //   return MaterialPageRoute(builder: (_) => const SalesReportScreen());
-      // case inventoryReport:
-      //   return MaterialPageRoute(builder: (_) => const InventoryReportScreen());
-      // case settings:
-      //   return MaterialPageRoute(builder: (_) => const SettingsScreen());
+
+      case inventoryReport:
+        return MaterialPageRoute(builder: (_) => const InventoryScreen());
 
       default:
         return MaterialPageRoute(

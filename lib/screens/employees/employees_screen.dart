@@ -442,7 +442,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
           const SizedBox(height: 24),
 
           // Stats Cards
-          Row(
+          const Row(
             children: [
               _AttendanceStatCard(
                 title: 'Present',
@@ -450,14 +450,14 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                 color: Colors.green,
                 icon: Icons.check_circle,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               _AttendanceStatCard(
                 title: 'Late',
                 count: '1',
                 color: Colors.orange,
                 icon: Icons.schedule,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               _AttendanceStatCard(
                 title: 'Absent',
                 count: '1',

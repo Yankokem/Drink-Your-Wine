@@ -45,7 +45,7 @@ class CompactSideBar extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Menu Items
           Expanded(
             child: ListView(
@@ -69,6 +69,14 @@ class CompactSideBar extends StatelessWidget {
                 const SizedBox(height: 16),
                 const Divider(color: Colors.white24, height: 1),
                 const SizedBox(height: 16),
+                _CompactSideBarItem(
+                  icon: Icons.restaurant_menu,
+                  tooltip: 'Menu Management',
+                  route: '/menu',
+                  currentRoute: currentRoute,
+                  onTap: () => _navigateTo(context, '/menu'),
+                ),
+                const SizedBox(height: 8),
                 _CompactSideBarItem(
                   icon: Icons.inventory_2,
                   tooltip: 'Inventory',
@@ -105,7 +113,7 @@ class CompactSideBar extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // User Profile & Logout
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -203,9 +211,7 @@ class _CompactSideBarItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Material(
-          color: isActive
-              ? Colors.white.withOpacity(0.2)
-              : Colors.transparent,
+          color: isActive ? Colors.white.withOpacity(0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
             onTap: onTap,

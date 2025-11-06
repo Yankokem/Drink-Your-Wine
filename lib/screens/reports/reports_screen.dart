@@ -254,7 +254,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildSalesSummaryCards() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: _SummaryCard(
@@ -265,7 +265,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: '+15.3% vs last period',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Total Orders',
@@ -275,7 +275,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: '+8.7% vs last period',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Average Order',
@@ -285,7 +285,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: '+5.2% vs last period',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Total Items Sold',
@@ -397,7 +397,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildInventorySummaryCards() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: _SummaryCard(
@@ -408,7 +408,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: '12 categories',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Low Stock Items',
@@ -418,7 +418,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: 'Needs attention',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Out of Stock',
@@ -428,7 +428,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: 'Reorder immediately',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Total Value',
@@ -555,7 +555,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildEmployeeSummaryCards() {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           child: _SummaryCard(
@@ -566,7 +566,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: '18 active today',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Total Sales',
@@ -576,7 +576,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: 'By all employees',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Avg. Sales/Employee',
@@ -586,7 +586,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             subtitle: 'Performance metric',
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: _SummaryCard(
             title: 'Total Hours',

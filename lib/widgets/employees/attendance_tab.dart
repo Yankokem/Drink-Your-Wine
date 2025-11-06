@@ -171,9 +171,9 @@ class AttendanceTab extends StatelessWidget {
                       topRight: Radius.circular(12),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Date',
@@ -183,7 +183,7 @@ class AttendanceTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Day',
@@ -193,7 +193,7 @@ class AttendanceTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Time In',
@@ -203,7 +203,7 @@ class AttendanceTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Time Out',
@@ -213,7 +213,7 @@ class AttendanceTab extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 2,
                         child: Text(
                           'Hours',
@@ -227,7 +227,7 @@ class AttendanceTab extends StatelessWidget {
                         flex: 2,
                         child: Text(
                           'Status',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
