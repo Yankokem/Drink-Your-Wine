@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../../widgets/compact_side_bar.dart';
+import '../../widgets/employees/employee_card.dart';
 import '../../widgets/page_header.dart';
-import '../../widgets/employee_card.dart';
 
 class EmployeesScreen extends StatefulWidget {
   const EmployeesScreen({super.key});
@@ -11,9 +12,9 @@ class EmployeesScreen extends StatefulWidget {
 }
 
 class _EmployeesScreenState extends State<EmployeesScreen> {
+  String selectedTab = 'Employees';
   String searchQuery = '';
   String sortBy = 'Name';
-  int? selectedEmployeeId;
 
   // Sample employee data
   final List<Map<String, dynamic>> employees = [
@@ -53,23 +54,39 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'contact': '09161234567',
       'role': 'Admin',
     },
+    {
+      'user_id': 5,
+      'first_name': 'David',
+      'last_name': 'Brown',
+      'username': 'dbrown',
+      'password': 'encrypted_password_hash',
+      'contact': '09151234567',
+      'role': 'Staff',
+    },
+    {
+      'user_id': 6,
+      'first_name': 'Emily',
+      'last_name': 'Davis',
+      'username': 'edavis',
+      'password': 'encrypted_password_hash',
+      'contact': '09141234567',
+      'role': 'Staff',
+    },
   ];
 
   List<Map<String, dynamic>> get filteredEmployees {
     var filtered = employees.where((employee) {
-      final fullName = '${employee['first_name']} ${employee['last_name']}'.toLowerCase();
+      final fullName =
+          '${employee['first_name']} ${employee['last_name']}'.toLowerCase();
       final username = employee['username'].toLowerCase();
       final search = searchQuery.toLowerCase();
-      
+
       return fullName.contains(search) || username.contains(search);
     }).toList();
 
     if (sortBy == 'Name') {
-      filtered.sort((a, b) => 
-        '${a['first_name']} ${a['last_name']}'.compareTo(
-          '${b['first_name']} ${b['last_name']}'
-        )
-      );
+      filtered.sort((a, b) => '${a['first_name']} ${a['last_name']}'
+          .compareTo('${b['first_name']} ${b['last_name']}'));
     } else if (sortBy == 'Role') {
       filtered.sort((a, b) => a['role'].compareTo(b['role']));
     } else if (sortBy == 'Username') {
@@ -77,57 +94,6 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
     }
 
     return filtered;
-  }
-
-  Map<String, dynamic>? get selectedEmployee {
-    if (selectedEmployeeId == null) return null;
-    try {
-      return employees.firstWhere(
-        (emp) => emp['user_id'] == selectedEmployeeId,
-      );
-    } catch (e) {
-      return null;
-    }
-  }
-
-  void _deleteEmployee() {
-    if (selectedEmployee == null) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Employee'),
-        content: Text(
-          'Are you sure you want to delete ${selectedEmployee!['first_name']} ${selectedEmployee!['last_name']}? This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // TODO: Implement delete functionality
-              setState(() {
-                employees.removeWhere((emp) => emp['user_id'] == selectedEmployeeId);
-                selectedEmployeeId = null;
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Employee deleted successfully'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -143,371 +109,142 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
             child: Column(
               children: [
                 // Page Header
-                const PageHeader(title: 'Employees'),
+                const PageHeader(title: 'Employee Management'),
 
                 // Content
                 Expanded(
-                  child: Row(
-                    children: [
-                      // Left Section - Employee List
-                      Expanded(
-                        flex: 3,
-                        child: Container(
-                          color: const Color(0xFFF5F5F5),
+                  child: Container(
+                    color: const Color(0xFFF5F5F5),
+                    child: Column(
+                      children: [
+                        // Tab Section & Controls
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          color: Colors.white,
                           child: Column(
                             children: [
-                              // Search, Sort & Add Button
-                              Container(
-                                padding: const EdgeInsets.all(24),
-                                color: Colors.white,
-                                child: Row(
-                                  children: [
-                                    // Search Bar
-                                    Expanded(
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText: 'Search employees...',
-                                          prefixIcon: const Icon(Icons.search),
-                                          filled: true,
-                                          fillColor: const Color(0xFFF5F5F5),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          contentPadding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 12,
-                                          ),
-                                        ),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            searchQuery = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    
-                                    // Sort Dropdown
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFF5F5F5),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: DropdownButton<String>(
-                                        value: sortBy,
-                                        underline: const SizedBox(),
-                                        items: ['Name', 'Role', 'Username']
-                                            .map((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text('Sort by: $value'),
-                                          );
-                                        }).toList(),
-                                        onChanged: (value) {
-                                          setState(() {
-                                            sortBy = value!;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    
-                                    // Add Employee Button
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        Navigator.pushNamed(context, '/employees/add');
-                                      },
-                                      icon: const Icon(Icons.add),
-                                      label: const Text('Add Employee'),
-                                      style: ElevatedButton.styleFrom(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 24,
-                                          vertical: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              // Tabs
+                              Row(
+                                children: [
+                                  _TabButton(
+                                    label: 'Employees',
+                                    isSelected: selectedTab == 'Employees',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedTab = 'Employees';
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(width: 16),
+                                  _TabButton(
+                                    label: 'Attendance',
+                                    isSelected: selectedTab == 'Attendance',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedTab = 'Attendance';
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(width: 16),
+                                  _TabButton(
+                                    label: 'Activity Log',
+                                    isSelected: selectedTab == 'Activity Log',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedTab = 'Activity Log';
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
+                              const SizedBox(height: 16),
 
-                              // Employee Cards List
-                              Expanded(
-                                child: filteredEmployees.isEmpty
-                                    ? Center(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.people_outline,
-                                              size: 64,
-                                              color: Colors.grey.shade300,
-                                            ),
-                                            const SizedBox(height: 16),
-                                            Text(
-                                              'No employees found',
-                                              style: TextStyle(
-                                                color: Colors.grey.shade500,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ],
+                              // Search, Sort & Add Button
+                              Row(
+                                children: [
+                                  // Search Bar
+                                  Expanded(
+                                    child: TextField(
+                                      decoration: InputDecoration(
+                                        hintText: 'Search employees...',
+                                        prefixIcon: const Icon(Icons.search),
+                                        filled: true,
+                                        fillColor: const Color(0xFFF5F5F5),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: BorderSide.none,
                                         ),
-                                      )
-                                    : ListView.builder(
-                                        padding: const EdgeInsets.all(24),
-                                        itemCount: filteredEmployees.length,
-                                        itemBuilder: (context, index) {
-                                          final employee = filteredEmployees[index];
-                                          return Padding(
-                                            padding: const EdgeInsets.only(bottom: 12),
-                                            child: EmployeeCard(
-                                              userId: employee['user_id'],
-                                              firstName: employee['first_name'],
-                                              lastName: employee['last_name'],
-                                              username: employee['username'],
-                                              role: employee['role'],
-                                              contact: employee['contact'],
-                                              isSelected: selectedEmployeeId == employee['user_id'],
-                                              onTap: () {
-                                                setState(() {
-                                                  selectedEmployeeId = employee['user_id'];
-                                                });
-                                              },
-                                            ),
-                                          );
-                                        },
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
                                       ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          searchQuery = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+
+                                  // Sort Dropdown
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF5F5F5),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: DropdownButton<String>(
+                                      value: sortBy,
+                                      underline: const SizedBox(),
+                                      items: ['Name', 'Role', 'Username']
+                                          .map((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text('Sort by: $value'),
+                                        );
+                                      }).toList(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          sortBy = value!;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+
+                                  // Add Employee Button
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, '/employees/add');
+                                    },
+                                    icon: const Icon(Icons.add),
+                                    label: const Text('Add Employee'),
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                      ),
 
-                      // Right Section - Employee Details
-                      Container(
-                        width: 400,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(-2, 0),
-                            ),
-                          ],
+                        // Content Based on Selected Tab
+                        Expanded(
+                          child: _buildTabContent(),
                         ),
-                        child: selectedEmployee == null
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.person_outline,
-                                      size: 80,
-                                      color: Colors.grey.shade300,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Select an employee',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade500,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'to view details',
-                                      style: TextStyle(
-                                        color: Colors.grey.shade400,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : SingleChildScrollView(
-                                padding: const EdgeInsets.all(24),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    // Profile Picture
-                                    Container(
-                                      width: 120,
-                                      height: 120,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: (selectedEmployee!['role'].toLowerCase() == 'admin'
-                                                ? Colors.purple
-                                                : Colors.blue)
-                                            .withOpacity(0.1),
-                                        border: Border.all(
-                                          color: selectedEmployee!['role'].toLowerCase() == 'admin'
-                                              ? Colors.purple
-                                              : Colors.blue,
-                                          width: 3,
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          selectedEmployee!['first_name'][0].toUpperCase() +
-                                              selectedEmployee!['last_name'][0].toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize: 48,
-                                            fontWeight: FontWeight.bold,
-                                            color: selectedEmployee!['role'].toLowerCase() == 'admin'
-                                                ? Colors.purple
-                                                : Colors.blue,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 24),
-
-                                    // Full Name
-                                    Text(
-                                      '${selectedEmployee!['first_name']} ${selectedEmployee!['last_name']}',
-                                      style: const TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 8),
-
-                                    // Role Badge
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: (selectedEmployee!['role'].toLowerCase() == 'admin'
-                                                ? Colors.purple
-                                                : Colors.blue)
-                                            .withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            selectedEmployee!['role'].toLowerCase() == 'admin'
-                                                ? Icons.admin_panel_settings
-                                                : Icons.person,
-                                            size: 18,
-                                            color: selectedEmployee!['role'].toLowerCase() == 'admin'
-                                                ? Colors.purple
-                                                : Colors.blue,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            selectedEmployee!['role'],
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: selectedEmployee!['role'].toLowerCase() == 'admin'
-                                                  ? Colors.purple
-                                                  : Colors.blue,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 32),
-
-                                    // Employee Information
-                                    _InfoRow(
-                                      icon: Icons.badge,
-                                      label: 'Employee ID',
-                                      value: '#${selectedEmployee!['user_id'].toString().padLeft(4, '0')}',
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _InfoRow(
-                                      icon: Icons.person_outline,
-                                      label: 'Username',
-                                      value: '@${selectedEmployee!['username']}',
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _PasswordRow(
-                                      password: selectedEmployee!['password'] ?? '••••••••',
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _InfoRow(
-                                      icon: Icons.phone,
-                                      label: 'Contact Number',
-                                      value: selectedEmployee!['contact'] ?? 'N/A',
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _InfoRow(
-                                      icon: Icons.person,
-                                      label: 'First Name',
-                                      value: selectedEmployee!['first_name'],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _InfoRow(
-                                      icon: Icons.person,
-                                      label: 'Last Name',
-                                      value: selectedEmployee!['last_name'],
-                                    ),
-
-                                    const SizedBox(height: 32),
-
-                                    // Action Buttons
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: OutlinedButton.icon(
-                                            onPressed: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/employees/edit',
-                                                arguments: selectedEmployee,
-                                              );
-                                            },
-                                            icon: const Icon(Icons.edit),
-                                            label: const Text('Edit'),
-                                            style: OutlinedButton.styleFrom(
-                                              padding: const EdgeInsets.symmetric(
-                                                vertical: 16,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              side: BorderSide(
-                                                color: Theme.of(context).primaryColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: ElevatedButton.icon(
-                                            onPressed: _deleteEmployee,
-                                            icon: const Icon(Icons.delete),
-                                            label: const Text('Delete'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.red,
-                                              padding: const EdgeInsets.symmetric(
-                                                vertical: 16,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -517,140 +254,878 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       ),
     );
   }
+
+  Widget _buildTabContent() {
+    switch (selectedTab) {
+      case 'Employees':
+        return _buildEmployeesGrid();
+      case 'Attendance':
+        return _buildAttendanceView();
+      case 'Activity Log':
+        return _buildActivityLogView();
+      default:
+        return _buildEmployeesGrid();
+    }
+  }
+
+  Widget _buildEmployeesGrid() {
+    if (filteredEmployees.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.people_outline,
+              size: 64,
+              color: Colors.grey.shade300,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No employees found',
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(24),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 4,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: filteredEmployees.length,
+      itemBuilder: (context, index) {
+        final employee = filteredEmployees[index];
+        return EmployeeCard(
+          userId: employee['user_id'],
+          firstName: employee['first_name'],
+          lastName: employee['last_name'],
+          username: employee['username'],
+          role: employee['role'],
+          contact: employee['contact'],
+          isSelected: false,
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              '/employees/profile',
+              arguments: employee,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAttendanceView() {
+    // Sample attendance data
+    final attendanceData = [
+      {
+        'employee': 'John Doe',
+        'date': '2024-11-06',
+        'check_in': '08:45 AM',
+        'check_out': '05:15 PM',
+        'hours_worked': '8.5',
+        'status': 'Present',
+      },
+      {
+        'employee': 'Jane Smith',
+        'date': '2024-11-06',
+        'check_in': '09:00 AM',
+        'check_out': '06:00 PM',
+        'hours_worked': '9.0',
+        'status': 'Present',
+      },
+      {
+        'employee': 'Michael Johnson',
+        'date': '2024-11-06',
+        'check_in': '08:30 AM',
+        'check_out': '04:45 PM',
+        'hours_worked': '8.25',
+        'status': 'Present',
+      },
+      {
+        'employee': 'Sarah Williams',
+        'date': '2024-11-06',
+        'check_in': '--',
+        'check_out': '--',
+        'hours_worked': '0.0',
+        'status': 'Absent',
+      },
+      {
+        'employee': 'David Brown',
+        'date': '2024-11-06',
+        'check_in': '10:15 AM',
+        'check_out': '06:30 PM',
+        'hours_worked': '8.25',
+        'status': 'Late',
+      },
+      {
+        'employee': 'Emily Davis',
+        'date': '2024-11-06',
+        'check_in': '08:55 AM',
+        'check_out': '05:30 PM',
+        'hours_worked': '8.5',
+        'status': 'Present',
+      },
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.access_time,
+                  color: Theme.of(context).primaryColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Attendance',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Today\'s attendance records',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              // Date filter
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calendar_today, size: 16),
+                    const SizedBox(width: 8),
+                    const Text('2024-11-06'),
+                    const SizedBox(width: 8),
+                    Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Stats Cards
+          Row(
+            children: [
+              _AttendanceStatCard(
+                title: 'Present',
+                count: '4',
+                color: Colors.green,
+                icon: Icons.check_circle,
+              ),
+              const SizedBox(width: 16),
+              _AttendanceStatCard(
+                title: 'Late',
+                count: '1',
+                color: Colors.orange,
+                icon: Icons.schedule,
+              ),
+              const SizedBox(width: 16),
+              _AttendanceStatCard(
+                title: 'Absent',
+                count: '1',
+                color: Colors.red,
+                icon: Icons.cancel,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Attendance Table
+          Expanded(
+            child: Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  // Table Header
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                    ),
+                    child: const Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Employee',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Date',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Check In',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Check Out',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Hours',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Status',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Table Content
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: attendanceData.length,
+                      separatorBuilder: (context, index) => Divider(
+                        height: 1,
+                        color: Colors.grey.shade200,
+                      ),
+                      itemBuilder: (context, index) {
+                        final attendance = attendanceData[index];
+                        return _AttendanceRow(
+                          employee: attendance['employee'] as String,
+                          date: attendance['date'] as String,
+                          checkIn: attendance['check_in'] as String,
+                          checkOut: attendance['check_out'] as String,
+                          hoursWorked: attendance['hours_worked'] as String,
+                          status: attendance['status'] as String,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivityLogView() {
+    // Sample activity log data for all employees
+    final activityLogs = [
+      {
+        'employee': 'John Doe',
+        'action': 'Logged in',
+        'timestamp': '2024-11-06 09:00 AM',
+        'details': 'User logged into the system',
+        'type': 'authentication',
+      },
+      {
+        'employee': 'Jane Smith',
+        'action': 'Sale Transaction',
+        'timestamp': '2024-11-06 10:30 AM',
+        'details': 'Processed sale #0048 - ₱450.00',
+        'type': 'sale',
+      },
+      {
+        'employee': 'Michael Johnson',
+        'action': 'Product Updated',
+        'timestamp': '2024-11-06 11:15 AM',
+        'details': 'Updated inventory for Espresso Beans',
+        'type': 'inventory',
+      },
+      {
+        'employee': 'Sarah Williams',
+        'action': 'Sale Transaction',
+        'timestamp': '2024-11-06 01:45 PM',
+        'details': 'Processed sale #0052 - ₱680.00',
+        'type': 'sale',
+      },
+      {
+        'employee': 'David Brown',
+        'action': 'Logged out',
+        'timestamp': '2024-11-06 06:00 PM',
+        'details': 'User logged out from the system',
+        'type': 'authentication',
+      },
+      {
+        'employee': 'Emily Davis',
+        'action': 'Inventory Check',
+        'timestamp': '2024-11-06 04:30 PM',
+        'details': 'Performed daily inventory count',
+        'type': 'inventory',
+      },
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.history,
+                  color: Theme.of(context).primaryColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Activity Log',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Recent activities across all employees',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Activity Log Table
+          Expanded(
+            child: Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  // Table Header
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                    ),
+                    child: const Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Employee',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Action',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            'Details',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Timestamp',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Table Content
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: activityLogs.length,
+                      separatorBuilder: (context, index) => Divider(
+                        height: 1,
+                        color: Colors.grey.shade200,
+                      ),
+                      itemBuilder: (context, index) {
+                        final log = activityLogs[index];
+                        return _ActivityLogRow(
+                          employee: log['employee'] as String,
+                          action: log['action'] as String,
+                          details: log['details'] as String,
+                          timestamp: log['timestamp'] as String,
+                          type: log['type'] as String,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _PasswordRow extends StatefulWidget {
-  final String password;
+class _TabButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  const _PasswordRow({
-    required this.password,
+  const _TabButton({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
-  State<_PasswordRow> createState() => _PasswordRowState();
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected
+                  ? Theme.of(context).primaryColor
+                  : Colors.transparent,
+              width: 3,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Colors.grey.shade600,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _PasswordRowState extends State<_PasswordRow> {
-  bool _isVisible = false;
+class _AttendanceStatCard extends StatelessWidget {
+  final String title;
+  final String count;
+  final Color color;
+  final IconData icon;
+
+  const _AttendanceStatCard({
+    required this.title,
+    required this.count,
+    required this.color,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.lock,
-            size: 20,
-            color: Theme.of(context).primaryColor,
-          ),
+    return Expanded(
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
             children: [
-              Text(
-                'Password',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
                 ),
               ),
-              const SizedBox(height: 4),
-              Row(
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      _isVisible ? widget.password : '••••••••',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  Text(
+                    count,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: color,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _isVisible = !_isVisible;
-                      });
-                    },
-                    icon: Icon(
-                      _isVisible ? Icons.visibility_off : Icons.visibility,
-                      size: 20,
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
                   ),
                 ],
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
+class _AttendanceRow extends StatelessWidget {
+  final String employee;
+  final String date;
+  final String checkIn;
+  final String checkOut;
+  final String hoursWorked;
+  final String status;
 
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
+  const _AttendanceRow({
+    required this.employee,
+    required this.date,
+    required this.checkIn,
+    required this.checkOut,
+    required this.hoursWorked,
+    required this.status,
   });
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'present':
+        return Colors.green;
+      case 'late':
+        return Colors.orange;
+      case 'absent':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          // Employee
+          Expanded(
+            flex: 2,
+            child: Text(
+              employee,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
           ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: Theme.of(context).primaryColor,
+
+          // Date
+          Expanded(
+            flex: 2,
+            child: Text(
+              date,
+              style: const TextStyle(fontSize: 14),
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
+
+          // Check In
+          Expanded(
+            flex: 2,
+            child: Text(
+              checkIn,
+              style: TextStyle(
+                fontSize: 14,
+                color: checkIn == '--' ? Colors.grey.shade400 : Colors.black,
+              ),
+            ),
+          ),
+
+          // Check Out
+          Expanded(
+            flex: 2,
+            child: Text(
+              checkOut,
+              style: TextStyle(
+                fontSize: 14,
+                color: checkOut == '--' ? Colors.grey.shade400 : Colors.black,
+              ),
+            ),
+          ),
+
+          // Hours Worked
+          Expanded(
+            flex: 2,
+            child: Text(
+              '$hoursWorked hrs',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+
+          // Status
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: _getStatusColor(status).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _getStatusColor(status).withOpacity(0.3),
+                ),
+              ),
+              child: Text(
+                status,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  color: _getStatusColor(status),
                 ),
+                textAlign: TextAlign.center,
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ActivityLogRow extends StatelessWidget {
+  final String employee;
+  final String action;
+  final String details;
+  final String timestamp;
+  final String type;
+
+  const _ActivityLogRow({
+    required this.employee,
+    required this.action,
+    required this.details,
+    required this.timestamp,
+    required this.type,
+  });
+
+  Color _getTypeColor(String type) {
+    switch (type) {
+      case 'sale':
+        return Colors.green;
+      case 'inventory':
+        return Colors.orange;
+      case 'authentication':
+        return Colors.blue;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getTypeIcon(String type) {
+    switch (type) {
+      case 'sale':
+        return Icons.point_of_sale;
+      case 'inventory':
+        return Icons.inventory;
+      case 'authentication':
+        return Icons.security;
+      default:
+        return Icons.info;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          // Employee
+          Expanded(
+            flex: 2,
+            child: Text(
+              employee,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ),
+
+          // Action with Icon
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: _getTypeColor(type).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    _getTypeIcon(type),
+                    color: _getTypeColor(type),
+                    size: 16,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  action,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+
+          // Details
+          Expanded(
+            flex: 3,
+            child: Text(
+              details,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ),
+
+          // Timestamp
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.access_time,
+                  size: 14,
+                  color: Colors.grey.shade500,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  timestamp,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
