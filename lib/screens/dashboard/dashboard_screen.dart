@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/side_bar.dart';
+import '../../widgets/compact_side_bar.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -11,7 +11,7 @@ class DashboardScreen extends StatelessWidget {
       body: Row(
         children: [
           // Sidebar
-          const SideBar(currentRoute: '/dashboard'),
+          const CompactSideBar(currentRoute: '/dashboard'),
 
           // Main Content
           Expanded(

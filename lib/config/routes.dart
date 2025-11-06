@@ -1,3 +1,7 @@
+import 'package:drink_your_wine_pos/screens/employees/add_employee_screen.dart';
+import 'package:drink_your_wine_pos/screens/employees/edit_employee_screen.dart';
+import 'package:drink_your_wine_pos/screens/employees/employees_screen.dart';
+import 'package:drink_your_wine_pos/screens/pos/pos_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/auth/login_screen.dart';
@@ -32,6 +36,20 @@ class Routes {
 
       case dashboard:
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
+
+      case pos:
+      return MaterialPageRoute(builder: (_) => const POSScreen());
+
+      case employees:
+        return MaterialPageRoute(builder: (_) => const EmployeesScreen());
+      
+      case addEmployee:
+        return MaterialPageRoute(builder: (_) => const AddEmployeeScreen());
+
+      case editEmployee:
+        return MaterialPageRoute(builder: (_) => const EditEmployeeScreen());
+
+      
 
       default:
         return MaterialPageRoute(
