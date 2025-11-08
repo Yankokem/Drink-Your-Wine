@@ -7,8 +7,14 @@ import 'package:drink_your_wine_pos/screens/employees/employees_screen.dart';
 import 'package:drink_your_wine_pos/screens/inventory/add_product_screen.dart';
 import 'package:drink_your_wine_pos/screens/inventory/edit_product_screen.dart';
 import 'package:drink_your_wine_pos/screens/inventory/inventory_screen.dart';
+import 'package:drink_your_wine_pos/screens/menu/add_item_screen.dart';
+import 'package:drink_your_wine_pos/screens/menu/add_menu_screen.dart';
+import 'package:drink_your_wine_pos/screens/menu/edit_item_screen.dart';
+import 'package:drink_your_wine_pos/screens/menu/edit_menu_screen.dart';
 //menu
 import 'package:drink_your_wine_pos/screens/menu/menu_screen.dart';
+import 'package:drink_your_wine_pos/screens/menu/view_item_screen.dart';
+import 'package:drink_your_wine_pos/screens/menu/view_menu_screen.dart';
 //pos
 import 'package:drink_your_wine_pos/screens/pos/pos_screen.dart';
 //reports
@@ -29,12 +35,18 @@ class Routes {
   static const String dashboard = '/dashboard';
   static const String pos = '/pos';
   static const String checkout = '/checkout';
-  
+
   // MENU ROUTES
   static const String menu = '/menu';
-  static const String addMenuItem = '/menu/add';
-  static const String editMenuItem = '/menu/edit';
-  
+  // Item routes
+  static const String addItem = '/menu/item/add';
+  static const String editItem = '/menu/item/edit';
+  static const String viewItem = '/menu/item/view';
+  // Menu routes
+  static const String addMenu = '/menu/menu/add';
+  static const String editMenu = '/menu/menu/edit';
+  static const String viewMenu = '/menu/menu/view';
+
   // INVENTORY ROUTES
   static const String inventory = '/inventory';
   static const String addProduct = '/inventory/add';
@@ -75,25 +87,36 @@ class Routes {
       case menu:
         return MaterialPageRoute(builder: (_) => const MenuScreen());
 
-      case addMenuItem:
-        // TODO: Create AddMenuItemScreen
+      // Item routes
+      case addItem:
+        return MaterialPageRoute(builder: (_) => const AddItemScreen());
+
+      case editItem:
+        final itemData = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(
-              child: Text('Add Menu Item Screen - Coming Soon'),
-            ),
-          ),
+          builder: (_) => EditItemScreen(itemData: itemData),
         );
 
-      case editMenuItem:
-        // TODO: Create EditMenuItemScreen
-        final menuItemData = settings.arguments as Map<String, dynamic>?;
+      case viewItem:
+        final itemData = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(
-              child: Text('Edit Menu Item Screen - Coming Soon'),
-            ),
-          ),
+          builder: (_) => ViewItemScreen(itemData: itemData),
+        );
+
+      // Menu routes
+      case addMenu:
+        return MaterialPageRoute(builder: (_) => const AddMenuScreen());
+
+      case editMenu:
+        final menuData = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => EditMenuScreen(menuData: menuData),
+        );
+
+      case viewMenu:
+        final menuData = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => ViewMenuScreen(menuData: menuData),
         );
 
       // INVENTORY ROUTES
