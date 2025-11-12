@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../../widgets/compact_side_bar.dart';
 import '../../widgets/page_header.dart';
 
@@ -68,71 +69,74 @@ class _EditMenuScreenState extends State<EditMenuScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: const Text('Add Item'),
-          content: Form(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<String>(
-                  value: selectedItem,
-                  decoration: const InputDecoration(
-                    labelText: 'Select Item',
-                    prefixIcon: Icon(Icons.coffee),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: availableItems
-                      .map<DropdownMenuItem<String>>((item) =>
-                          DropdownMenuItem<String>(
-                            value: item['name'] as String,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(item['name'] as String),
-                                Text(
-                                  '₱${(item['price'] as double).toStringAsFixed(2)}',
-                                  style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setDialogState(() {
-                      selectedItem = value;
-                    });
-                  },
-                ),
-                if (selectedItem != null) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.green.withOpacity(0.3),
-                      ),
+          content: SingleChildScrollView(
+            child: Form(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: selectedItem,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Item',
+                      prefixIcon: Icon(Icons.coffee),
+                      border: OutlineInputBorder(),
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline,
-                            color: Colors.green, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Price: ₱${(availableItems.firstWhere((item) => item['name'] == selectedItem)['price'] as double).toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
+                    items: availableItems
+                        .map<DropdownMenuItem<String>>(
+                            (item) => DropdownMenuItem<String>(
+                                  value: item['name'] as String,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(item['name'] as String),
+                                      Text(
+                                        '₱${(item['price'] as double).toStringAsFixed(2)}',
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                        .toList(),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        selectedItem = value;
+                      });
+                    },
+                  ),
+                  if (selectedItem != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.green.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline,
+                              color: Colors.green, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Price: ₱${(availableItems.firstWhere((item) => item['name'] == selectedItem)['price'] as double).toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           actions: [
@@ -216,420 +220,439 @@ class _EditMenuScreenState extends State<EditMenuScreen> {
                 Expanded(
                   child: Container(
                     color: const Color(0xFFF5F5F5),
-                    padding: const EdgeInsets.all(32),
-                    child: Form(
-                      key: _formKey,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Left Column - Image & Basic Info
-                          Expanded(
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(32),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                .primaryColor
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Icon(
-                                            Icons.restaurant_menu,
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            size: 24,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        const Text(
-                                          'Menu Information',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 32),
-
-                                    // Image Upload
-                                    Container(
-                                      height: 200,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: Colors.grey[300]!,
-                                          width: 2,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(32),
+                      child: Form(
+                        key: _formKey,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Left Column - Image & Basic Info
+                            Expanded(
+                              flex: 3,
+                              child: Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(32),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
                                         children: [
-                                          Icon(
-                                            Icons.add_photo_alternate,
-                                            size: 60,
-                                            color: Colors.grey[400],
+                                          Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .primaryColor
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Icon(
+                                              Icons.restaurant_menu,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              size: 24,
+                                            ),
                                           ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            'Click to upload image',
+                                          const SizedBox(width: 12),
+                                          const Text(
+                                            'Menu Information',
                                             style: TextStyle(
-                                              color: Colors.grey[600],
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    const SizedBox(height: 24),
+                                      const SizedBox(height: 32),
 
-                                    // Menu Name
-                                    TextFormField(
-                                      controller: _nameController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Menu Name',
-                                        prefixIcon: Icon(Icons.menu_book),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter menu name';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    // Price with Total Info
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        TextFormField(
-                                          controller: _priceController,
-                                          decoration: InputDecoration(
-                                            labelText: 'Menu Price (₱)',
-                                            prefixIcon:
-                                                const Icon(Icons.attach_money),
-                                            suffixIcon: _selectedItems
-                                                    .isNotEmpty
-                                                ? Tooltip(
-                                                    message:
-                                                        'Total items: ₱${_totalItemsPrice.toStringAsFixed(2)}',
-                                                    child: Icon(
-                                                      Icons.info_outline,
-                                                      color: Theme.of(context)
-                                                          .primaryColor,
-                                                    ),
-                                                  )
-                                                : null,
+                                      // Image Upload
+                                      Container(
+                                        height: 150,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: Colors.grey[300]!,
+                                            width: 2,
                                           ),
-                                          keyboardType: const TextInputType
-                                              .numberWithOptions(decimal: true),
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(r'^\d*\.?\d*')),
-                                          ],
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Please enter price';
-                                            }
-                                            if (double.tryParse(value) ==
-                                                null) {
-                                              return 'Invalid price';
-                                            }
-                                            return null;
-                                          },
                                         ),
-                                        if (_selectedItems.isNotEmpty) ...[
-                                          const SizedBox(height: 8),
-                                          Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.blue.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: Colors.blue
-                                                    .withOpacity(0.3),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.add_photo_alternate,
+                                              size: 40,
+                                              color: Colors.grey[400],
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Upload image',
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontSize: 12,
                                               ),
                                             ),
-                                            child: Row(
-                                              children: [
-                                                const Icon(
-                                                  Icons.calculate,
-                                                  color: Colors.blue,
-                                                  size: 20,
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+
+                                      // Menu Name
+                                      TextFormField(
+                                        controller: _nameController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Menu Name',
+                                          prefixIcon: Icon(Icons.menu_book),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter menu name';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 20),
+
+                                      // Price with Total Info
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TextFormField(
+                                            controller: _priceController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Menu Price (₱)',
+                                              prefixIcon: const Icon(
+                                                  Icons.attach_money),
+                                              suffixIcon: _selectedItems
+                                                      .isNotEmpty
+                                                  ? Tooltip(
+                                                      message:
+                                                          'Total items: ₱${_totalItemsPrice.toStringAsFixed(2)}',
+                                                      child: Icon(
+                                                        Icons.info_outline,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                    )
+                                                  : null,
+                                            ),
+                                            keyboardType: const TextInputType
+                                                .numberWithOptions(
+                                                decimal: true),
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp(r'^\d*\.?\d*')),
+                                            ],
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter price';
+                                              }
+                                              if (double.tryParse(value) ==
+                                                  null) {
+                                                return 'Invalid price';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          if (_selectedItems.isNotEmpty) ...[
+                                            const SizedBox(height: 8),
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: Colors.blue
+                                                      .withOpacity(0.3),
                                                 ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  'Items Total: ₱${_totalItemsPrice.toStringAsFixed(2)}',
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.w600,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.calculate,
                                                     color: Colors.blue,
+                                                    size: 20,
                                                   ),
-                                                ),
-                                                const Spacer(),
-                                                if (_priceController
-                                                    .text.isNotEmpty)
+                                                  const SizedBox(width: 8),
                                                   Text(
-                                                    'Savings: ₱${(_totalItemsPrice - double.parse(_priceController.text)).toStringAsFixed(2)}',
-                                                    style: TextStyle(
+                                                    'Items Total: ₱${_totalItemsPrice.toStringAsFixed(2)}',
+                                                    style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      color: (_totalItemsPrice -
-                                                                  double.parse(
-                                                                      _priceController
-                                                                          .text)) >
-                                                              0
-                                                          ? Colors.green
-                                                          : Colors.red,
+                                                      color: Colors.blue,
                                                     ),
                                                   ),
-                                              ],
+                                                  const Spacer(),
+                                                  if (_priceController
+                                                      .text.isNotEmpty)
+                                                    Text(
+                                                      'Savings: ₱${(_totalItemsPrice - double.parse(_priceController.text)).toStringAsFixed(2)}',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: (_totalItemsPrice -
+                                                                    double.parse(
+                                                                        _priceController
+                                                                            .text)) >
+                                                                0
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ],
-                                      ],
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    // Description
-                                    TextFormField(
-                                      controller: _descriptionController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Description',
-                                        prefixIcon: Icon(Icons.description),
                                       ),
-                                      maxLines: 3,
-                                    ),
-                                  ],
+                                      const SizedBox(height: 20),
+
+                                      // Description
+                                      TextFormField(
+                                        controller: _descriptionController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Description',
+                                          prefixIcon: Icon(Icons.description),
+                                        ),
+                                        maxLines: 5,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 24),
+                            const SizedBox(width: 24),
 
-                          // Right Column - Items
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Card(
+                            // Right Column - Items
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Card(
                                     elevation: 2,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(32),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .primaryColor
-                                                      .withOpacity(0.1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
+                                    child: Container(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 400,
+                                        maxHeight: 600,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(32),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                    color: Theme.of(context)
+                                                        .primaryColor
+                                                        .withOpacity(0.1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.fastfood,
+                                                    color: Theme.of(context)
+                                                        .primaryColor,
+                                                    size: 24,
+                                                  ),
                                                 ),
-                                                child: Icon(
-                                                  Icons.fastfood,
+                                                const SizedBox(width: 12),
+                                                const Text(
+                                                  'Items',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const Spacer(),
+                                                IconButton(
+                                                  onPressed: _addItem,
+                                                  icon: const Icon(
+                                                      Icons.add_circle),
                                                   color: Theme.of(context)
                                                       .primaryColor,
-                                                  size: 24,
+                                                  iconSize: 32,
                                                 ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              const Text(
-                                                'Items',
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              IconButton(
-                                                onPressed: _addItem,
-                                                icon: const Icon(
-                                                    Icons.add_circle),
-                                                color: Theme.of(context)
-                                                    .primaryColor,
-                                                iconSize: 32,
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 24),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 24),
 
-                                          // Items List
-                                          Expanded(
-                                            child: _selectedItems.isEmpty
-                                                ? Center(
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          Icons
-                                                              .add_circle_outline,
-                                                          size: 60,
-                                                          color:
-                                                              Colors.grey[300],
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 16),
-                                                        Text(
-                                                          'No items added',
-                                                          style: TextStyle(
+                                            // Items List
+                                            Expanded(
+                                              child: _selectedItems.isEmpty
+                                                  ? Center(
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .add_circle_outline,
+                                                            size: 60,
                                                             color: Colors
-                                                                .grey[600],
-                                                            fontSize: 16,
+                                                                .grey[300],
                                                           ),
-                                                        ),
-                                                      ],
+                                                          const SizedBox(
+                                                              height: 16),
+                                                          Text(
+                                                            'No items added',
+                                                            style: TextStyle(
+                                                              color: Colors
+                                                                  .grey[600],
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : ListView.separated(
+                                                      shrinkWrap: true,
+                                                      itemCount:
+                                                          _selectedItems.length,
+                                                      separatorBuilder:
+                                                          (context, index) =>
+                                                              const Divider(),
+                                                      itemBuilder:
+                                                          (context, index) {
+                                                        final item =
+                                                            _selectedItems[
+                                                                index];
+                                                        return ListTile(
+                                                          leading: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColor
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8),
+                                                            ),
+                                                            child: Icon(
+                                                              Icons.coffee,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColor,
+                                                            ),
+                                                          ),
+                                                          title: Text(
+                                                            item['name'],
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                          ),
+                                                          subtitle: Text(
+                                                            '₱${item['price'].toStringAsFixed(2)}',
+                                                            style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                          ),
+                                                          trailing: IconButton(
+                                                            icon: const Icon(
+                                                                Icons.delete,
+                                                                size: 20),
+                                                            color: Colors.red,
+                                                            onPressed: () =>
+                                                                _removeItem(
+                                                                    index),
+                                                          ),
+                                                        );
+                                                      },
                                                     ),
-                                                  )
-                                                : ListView.separated(
-                                                    itemCount:
-                                                        _selectedItems.length,
-                                                    separatorBuilder:
-                                                        (context, index) =>
-                                                            const Divider(),
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      final item =
-                                                          _selectedItems[index];
-                                                      return ListTile(
-                                                        leading: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor
-                                                                .withOpacity(
-                                                                    0.1),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8),
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.coffee,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
-                                                          ),
-                                                        ),
-                                                        title: Text(
-                                                          item['name'],
-                                                          style:
-                                                              const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                        subtitle: Text(
-                                                          '₱${item['price'].toStringAsFixed(2)}',
-                                                          style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                        trailing: IconButton(
-                                                          icon: const Icon(
-                                                              Icons.delete,
-                                                              size: 20),
-                                                          color: Colors.red,
-                                                          onPressed: () =>
-                                                              _removeItem(
-                                                                  index),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                          ),
-                                        ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 24),
+                                  const SizedBox(height: 24),
 
-                                // Action Buttons
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: OutlinedButton(
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                        style: OutlinedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 20,
+                                  // Action Buttons
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 20,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
                                           ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                          child: const Text(
+                                            'Cancel',
+                                            style: TextStyle(fontSize: 16),
                                           ),
-                                        ),
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(fontSize: 16),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        onPressed: _updateMenu,
-                                        style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 20,
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: _updateMenu,
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 20,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
                                           ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                          child: const Text(
+                                            'Update Menu',
+                                            style: TextStyle(fontSize: 16),
                                           ),
-                                        ),
-                                        child: const Text(
-                                          'Update Menu',
-                                          style: TextStyle(fontSize: 16),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/compact_side_bar.dart';
 import '../../widgets/menu/item_card.dart';
 import '../../widgets/menu/menu_card.dart';
+import '../../widgets/page_header.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -11,9 +12,12 @@ class MenuScreen extends StatefulWidget {
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _MenuScreenState extends State<MenuScreen> {
+  String selectedTab = 'Items';
+  String _itemSearchQuery = '';
+  String _menuSearchQuery = '';
+  String _itemFilter = 'All';
+  String _menuFilter = 'All';
 
   // Mock data for items
   final List<Map<String, dynamic>> _items = [
@@ -59,16 +63,24 @@ class _MenuScreenState extends State<MenuScreen>
     },
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+  List<Map<String, dynamic>> get _filteredItems {
+    return _items.where((item) {
+      final matchesSearch = item['name']
+          .toString()
+          .toLowerCase()
+          .contains(_itemSearchQuery.toLowerCase());
+      return matchesSearch;
+    }).toList();
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  List<Map<String, dynamic>> get _filteredMenus {
+    return _menus.where((menu) {
+      final matchesSearch = menu['name']
+          .toString()
+          .toLowerCase()
+          .contains(_menuSearchQuery.toLowerCase());
+      return matchesSearch;
+    }).toList();
   }
 
   void _deleteItem(int id) {
@@ -144,189 +156,339 @@ class _MenuScreenState extends State<MenuScreen>
           Expanded(
             child: Column(
               children: [
-                // Top Bar
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Menu Management',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Page Header
+                const PageHeader(title: 'Menu Management'),
 
-                // Tabs
-                Container(
-                  color: Colors.white,
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Theme.of(context).primaryColor,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: Theme.of(context).primaryColor,
-                    tabs: const [
-                      Tab(
-                        icon: Icon(Icons.coffee),
-                        text: 'Items',
-                      ),
-                      Tab(
-                        icon: Icon(Icons.restaurant_menu),
-                        text: 'Menus',
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Tab Views
+                // Content
                 Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      // Items Tab
-                      Container(
-                        color: const Color(0xFFF5F5F5),
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'All Items (${_items.length})',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                  child: Container(
+                    color: const Color(0xFFF5F5F5),
+                    child: Column(
+                      children: [
+                        // Tab Section & Controls
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          color: Colors.white,
+                          child: Column(
+                            children: [
+                              // Tabs
+                              Row(
+                                children: [
+                                  _TabButton(
+                                    label: 'Items',
+                                    isSelected: selectedTab == 'Items',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedTab = 'Items';
+                                      });
+                                    },
                                   ),
-                                ),
-                                ElevatedButton.icon(
-                                  onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    '/menu/item/add',
+                                  const SizedBox(width: 16),
+                                  _TabButton(
+                                    label: 'Menus',
+                                    isSelected: selectedTab == 'Menus',
+                                    onTap: () {
+                                      setState(() {
+                                        selectedTab = 'Menus';
+                                      });
+                                    },
                                   ),
-                                  icon: const Icon(Icons.add, size: 20),
-                                  label: const Text('Add Item'),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            Expanded(
-                              child: GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 0.75,
-                                ),
-                                itemCount: _items.length,
-                                itemBuilder: (context, index) {
-                                  return ItemCard(
-                                    itemData: _items[index],
-                                    onEdit: () => Navigator.pushNamed(
-                                      context,
-                                      '/menu/item/edit',
-                                      arguments: _items[index],
-                                    ),
-                                    onDelete: () =>
-                                        _deleteItem(_items[index]['id']),
-                                    onTap: () => Navigator.pushNamed(
-                                      context,
-                                      '/menu/item/view',
-                                      arguments: _items[index],
-                                    ),
-                                  );
-                                },
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
+                              const SizedBox(height: 16),
 
-                      // Menus Tab
-                      Container(
-                        color: const Color(0xFFF5F5F5),
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'All Menus (${_menus.length})',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                ElevatedButton.icon(
-                                  onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    '/menu/menu/add',
-                                  ),
-                                  icon: const Icon(Icons.add, size: 20),
-                                  label: const Text('Add Menu'),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            Expanded(
-                              child: GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 0.75,
-                                ),
-                                itemCount: _menus.length,
-                                itemBuilder: (context, index) {
-                                  return MenuCard(
-                                    menuData: _menus[index],
-                                    onEdit: () => Navigator.pushNamed(
-                                      context,
-                                      '/menu/menu/edit',
-                                      arguments: _menus[index],
+                              // Search and Filter Bar
+                              if (selectedTab == 'Items')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        onChanged: (value) => setState(() {
+                                          _itemSearchQuery = value;
+                                        }),
+                                        decoration: InputDecoration(
+                                          hintText: 'Search items...',
+                                          prefixIcon: const Icon(Icons.search),
+                                          filled: true,
+                                          fillColor: const Color(0xFFF5F5F5),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                    onDelete: () =>
-                                        _deleteMenu(_menus[index]['id']),
-                                    onTap: () => Navigator.pushNamed(
-                                      context,
-                                      '/menu/menu/view',
-                                      arguments: _menus[index],
+                                    const SizedBox(width: 16),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF5F5F5),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: DropdownButton<String>(
+                                        value: _itemFilter,
+                                        underline: const SizedBox(),
+                                        items: ['All', 'Hot', 'Cold', 'Pastry']
+                                            .map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text('Filter: $value'),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _itemFilter = value!;
+                                          });
+                                        },
+                                      ),
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                                    const SizedBox(width: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: () => Navigator.pushNamed(
+                                        context,
+                                        '/menu/item/add',
+                                      ),
+                                      icon: const Icon(Icons.add),
+                                      label: const Text('Add Item'),
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (selectedTab == 'Menus')
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        onChanged: (value) => setState(() {
+                                          _menuSearchQuery = value;
+                                        }),
+                                        decoration: InputDecoration(
+                                          hintText: 'Search menus...',
+                                          prefixIcon: const Icon(Icons.search),
+                                          filled: true,
+                                          fillColor: const Color(0xFFF5F5F5),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF5F5F5),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: DropdownButton<String>(
+                                        value: _menuFilter,
+                                        underline: const SizedBox(),
+                                        items: ['All', 'Bundle', 'Special']
+                                            .map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text('Filter: $value'),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _menuFilter = value!;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: () => Navigator.pushNamed(
+                                        context,
+                                        '/menu/menu/add',
+                                      ),
+                                      icon: const Icon(Icons.add),
+                                      label: const Text('Add Menu'),
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+
+                        // Content Based on Selected Tab
+                        Expanded(
+                          child: _buildTabContent(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTabContent() {
+    if (selectedTab == 'Items') {
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'All Items (${_filteredItems.length})',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.70, // Adjusted to prevent overflow
+                ),
+                itemCount: _filteredItems.length,
+                itemBuilder: (context, index) {
+                  return ItemCard(
+                    itemData: _filteredItems[index],
+                    onEdit: () => Navigator.pushNamed(
+                      context,
+                      '/menu/item/edit',
+                      arguments: _filteredItems[index],
+                    ),
+                    onDelete: () => _deleteItem(_filteredItems[index]['id']),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      '/menu/item/view',
+                      arguments: _filteredItems[index],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'All Menus (${_filteredMenus.length})',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.70, // Adjusted to prevent overflow
+                ),
+                itemCount: _filteredMenus.length,
+                itemBuilder: (context, index) {
+                  return MenuCard(
+                    menuData: _filteredMenus[index],
+                    onEdit: () => Navigator.pushNamed(
+                      context,
+                      '/menu/menu/edit',
+                      arguments: _filteredMenus[index],
+                    ),
+                    onDelete: () => _deleteMenu(_filteredMenus[index]['id']),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      '/menu/menu/view',
+                      arguments: _filteredMenus[index],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+}
+
+class _TabButton extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _TabButton({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected
+                  ? Theme.of(context).primaryColor
+                  : Colors.transparent,
+              width: 3,
+            ),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Colors.grey.shade600,
+          ),
+        ),
       ),
     );
   }

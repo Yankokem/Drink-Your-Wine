@@ -55,7 +55,7 @@ class _ItemSelectorFormState extends State<ItemSelectorForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              value: _selectedItem,
+              initialValue: _selectedItem,
               decoration: const InputDecoration(
                 labelText: 'Select Item',
                 prefixIcon: Icon(Icons.coffee),

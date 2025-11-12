@@ -21,19 +21,16 @@ class ItemCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Image
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(12)),
+            // Square Image
+            AspectRatio(
+              aspectRatio: 1,
               child: Container(
-                height: 150,
-                width: double.infinity,
                 color: Colors.grey[200],
                 child: itemData['image'] != null
                     ? Image.network(
@@ -42,34 +39,37 @@ class ItemCard extends StatelessWidget {
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
                             Icons.coffee,
-                            size: 60,
+                            size: 48,
                             color: Colors.grey,
                           );
                         },
                       )
                     : const Icon(
                         Icons.coffee,
-                        size: 60,
+                        size: 48,
                         color: Colors.grey,
                       ),
               ),
             ),
 
-            // Content
-            Expanded(
-              child: Padding(
+            // Content with flexible height
+            Flexible(
+              child: Container(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      itemData['name'] ?? 'Unnamed Item',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                    Flexible(
+                      child: Text(
+                        itemData['name'] ?? 'Unnamed Item',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -77,46 +77,20 @@ class ItemCard extends StatelessWidget {
                       style: TextStyle(
                         color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                        fontSize: 13,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      itemData['container'] ?? '',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
+                    const SizedBox(height: 2),
+                    Flexible(
+                      child: Text(
+                        itemData['container'] ?? '',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 11,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const Spacer(),
-                    // Action Buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: onEdit,
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor),
-                            ),
-                            child: const Text(
-                              'Edit',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: onDelete,
-                          icon: const Icon(Icons.delete, size: 20),
-                          color: Colors.red,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
                     ),
                   ],
                 ),

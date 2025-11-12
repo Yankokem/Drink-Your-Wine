@@ -92,7 +92,6 @@ class DashboardScreen extends StatelessWidget {
                                 value: '₱12,450.00',
                                 icon: Icons.trending_up,
                                 color: Colors.green,
-                                percentage: '+12.5%',
                               ),
                             ),
                             SizedBox(width: 16),
@@ -102,17 +101,15 @@ class DashboardScreen extends StatelessWidget {
                                 value: '48',
                                 icon: Icons.receipt_long,
                                 color: Colors.blue,
-                                percentage: '+8.3%',
                               ),
                             ),
                             SizedBox(width: 16),
                             Expanded(
                               child: _StatCard(
-                                title: 'Customers',
-                                value: '32',
-                                icon: Icons.people,
+                                title: 'Revenue',
+                                value: '₱45,280.00',
+                                icon: Icons.account_balance_wallet,
                                 color: Colors.orange,
-                                percentage: '+5.2%',
                               ),
                             ),
                             SizedBox(width: 16),
@@ -122,18 +119,17 @@ class DashboardScreen extends StatelessWidget {
                                 value: '₱259.38',
                                 icon: Icons.attach_money,
                                 color: Colors.purple,
-                                percentage: '+3.1%',
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 24),
 
-                        // Quick Actions & Recent Orders
+                        // Popular Items & Recent Orders
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Quick Actions
+                            // Popular Items
                             Expanded(
                               flex: 1,
                               child: Card(
@@ -148,7 +144,7 @@ class DashboardScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Quick Actions',
+                                        'Popular Items',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleLarge
@@ -157,36 +153,32 @@ class DashboardScreen extends StatelessWidget {
                                             ),
                                       ),
                                       const SizedBox(height: 16),
-                                      _QuickActionButton(
-                                        icon: Icons.point_of_sale,
-                                        label: 'New Order',
-                                        color: Theme.of(context).primaryColor,
-                                        onTap: () => Navigator.pushNamed(
-                                            context, '/pos'),
+                                      const _PopularItemTile(
+                                        name: 'Iced Caramel Latte',
+                                        sales: '24 sold',
+                                        icon: Icons.coffee,
+                                        color: Colors.brown,
                                       ),
                                       const SizedBox(height: 12),
-                                      _QuickActionButton(
-                                        icon: Icons.add_box,
-                                        label: 'Add Product',
-                                        color: Colors.green,
-                                        onTap: () => Navigator.pushNamed(
-                                            context, '/inventory/add'),
+                                      const _PopularItemTile(
+                                        name: 'Espresso',
+                                        sales: '18 sold',
+                                        icon: Icons.local_cafe,
+                                        color: Colors.deepOrange,
                                       ),
                                       const SizedBox(height: 12),
-                                      _QuickActionButton(
-                                        icon: Icons.person_add,
-                                        label: 'Add Employee',
-                                        color: Colors.blue,
-                                        onTap: () => Navigator.pushNamed(
-                                            context, '/employees/add'),
+                                      const _PopularItemTile(
+                                        name: 'Cappuccino',
+                                        sales: '15 sold',
+                                        icon: Icons.coffee_maker,
+                                        color: Colors.amber,
                                       ),
                                       const SizedBox(height: 12),
-                                      _QuickActionButton(
-                                        icon: Icons.bar_chart,
-                                        label: 'View Reports',
+                                      const _PopularItemTile(
+                                        name: 'Chocolate Croissant',
+                                        sales: '12 sold',
+                                        icon: Icons.bakery_dining,
                                         color: Colors.orange,
-                                        onTap: () => Navigator.pushNamed(
-                                            context, '/reports'),
                                       ),
                                     ],
                                   ),
@@ -352,14 +344,12 @@ class _StatCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
-  final String percentage;
 
   const _StatCard({
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
-    required this.percentage,
   });
 
   @override
@@ -374,36 +364,13 @@ class _StatCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(icon, color: color, size: 24),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    percentage,
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 16),
             Text(
@@ -428,44 +395,61 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _QuickActionButton extends StatelessWidget {
+class _PopularItemTile extends StatelessWidget {
+  final String name;
+  final String sales;
   final IconData icon;
-  final String label;
   final Color color;
-  final VoidCallback onTap;
 
-  const _QuickActionButton({
+  const _PopularItemTile({
+    required this.name,
+    required this.sales,
     required this.icon,
-    required this.label,
     required this.color,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Icon(icon, color: color, size: 24),
-              const SizedBox(width: 12),
-              Text(
-                label,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-        ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  sales,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

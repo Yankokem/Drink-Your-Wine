@@ -338,7 +338,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
                                     // Category
                                     DropdownButtonFormField<String>(
-                                      value: _categoryController.text.isEmpty
+                                      initialValue: _categoryController.text.isEmpty
                                           ? null
                                           : _categoryController.text,
                                       decoration: const InputDecoration(
@@ -478,7 +478,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                               Expanded(
                                                 child: DropdownButtonFormField<
                                                     String>(
-                                                  value: _selectedUnit,
+                                                  initialValue: _selectedUnit,
                                                   decoration:
                                                       const InputDecoration(
                                                     labelText: 'Unit',

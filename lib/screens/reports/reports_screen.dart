@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/compact_side_bar.dart';
+import '../../widgets/page_header.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -88,45 +89,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
           Expanded(
             child: Column(
               children: [
-                // Top Bar
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Reports',
-                        style:
-                            Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                      const Spacer(),
-                      // Export Button
-                      ElevatedButton.icon(
-                        onPressed: _exportReport,
-                        icon: const Icon(Icons.file_download, size: 20),
-                        label: const Text('Export'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // Page Header
+                const PageHeader(title: 'Reports'),
 
                 // Content
                 Expanded(
@@ -221,6 +185,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 16),
+                                ElevatedButton.icon(
+                                  onPressed: _exportReport,
+                                  icon:
+                                      const Icon(Icons.file_download, size: 20),
+                                  label: const Text('Export'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -262,7 +238,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '₱45,280.00',
             icon: Icons.attach_money,
             color: Colors.green,
-            subtitle: '+15.3% vs last period',
           ),
         ),
         SizedBox(width: 16),
@@ -272,7 +247,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '187',
             icon: Icons.receipt_long,
             color: Colors.blue,
-            subtitle: '+8.7% vs last period',
           ),
         ),
         SizedBox(width: 16),
@@ -282,7 +256,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '₱242.14',
             icon: Icons.shopping_cart,
             color: Colors.orange,
-            subtitle: '+5.2% vs last period',
           ),
         ),
         SizedBox(width: 16),
@@ -292,7 +265,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '524',
             icon: Icons.inventory,
             color: Colors.purple,
-            subtitle: '+12.1% vs last period',
           ),
         ),
       ],
@@ -308,32 +280,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Sales Transactions',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {
-                        // Refresh data
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.filter_list),
-                      onPressed: () {
-                        // Show filter options
-                      },
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              'Sales Transactions',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Table(
@@ -405,7 +356,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '156',
             icon: Icons.inventory_2,
             color: Colors.blue,
-            subtitle: '12 categories',
           ),
         ),
         SizedBox(width: 16),
@@ -415,7 +365,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '8',
             icon: Icons.warning_amber,
             color: Colors.orange,
-            subtitle: 'Needs attention',
           ),
         ),
         SizedBox(width: 16),
@@ -425,7 +374,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '3',
             icon: Icons.remove_circle,
             color: Colors.red,
-            subtitle: 'Reorder immediately',
           ),
         ),
         SizedBox(width: 16),
@@ -435,7 +383,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '₱128,450',
             icon: Icons.attach_money,
             color: Colors.green,
-            subtitle: 'Inventory worth',
           ),
         ),
       ],
@@ -451,28 +398,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Inventory Status',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.filter_list),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              'Inventory Status',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Table(
@@ -563,7 +493,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '24',
             icon: Icons.people,
             color: Colors.blue,
-            subtitle: '18 active today',
           ),
         ),
         SizedBox(width: 16),
@@ -573,7 +502,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '₱45,280',
             icon: Icons.trending_up,
             color: Colors.green,
-            subtitle: 'By all employees',
           ),
         ),
         SizedBox(width: 16),
@@ -583,7 +511,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '₱1,887',
             icon: Icons.person,
             color: Colors.orange,
-            subtitle: 'Performance metric',
           ),
         ),
         SizedBox(width: 16),
@@ -593,7 +520,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
             value: '192',
             icon: Icons.access_time,
             color: Colors.purple,
-            subtitle: 'Working hours',
           ),
         ),
       ],
@@ -609,28 +535,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Employee Performance',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.filter_list),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              'Employee Performance',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 16),
             Table(
@@ -785,14 +694,12 @@ class _SummaryCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
-  final String subtitle;
 
   const _SummaryCard({
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
-    required this.subtitle,
   });
 
   @override
@@ -805,18 +712,13 @@ class _SummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(icon, color: color, size: 24),
-                ),
-              ],
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 16),
             Text(
@@ -832,14 +734,6 @@ class _SummaryCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontSize: 12,
               ),
             ),
           ],
