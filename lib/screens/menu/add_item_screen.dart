@@ -27,7 +27,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     'Cup - L',
   ];
 
-  List<Map<String, dynamic>> _ingredients = [];
+  final List<Map<String, dynamic>> _ingredients = [];
 
   @override
   void dispose() {
@@ -64,7 +64,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
-                  value: selectedIngredient,
+                  initialValue: selectedIngredient,
                   decoration: const InputDecoration(
                     labelText: 'Ingredient',
                     prefixIcon: Icon(Icons.inventory_2),
@@ -319,7 +319,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
                                     // Container Type
                                     DropdownButtonFormField<String>(
-                                      value: _selectedContainer,
+                                      initialValue: _selectedContainer,
                                       decoration: const InputDecoration(
                                         labelText: 'Container',
                                         prefixIcon: Icon(Icons.local_cafe),

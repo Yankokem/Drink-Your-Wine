@@ -80,7 +80,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
-                  value: selectedIngredient,
+                  initialValue: selectedIngredient,
                   decoration: const InputDecoration(
                     labelText: 'Ingredient',
                     prefixIcon: Icon(Icons.inventory_2),
@@ -333,7 +333,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
 
                                     // Container Type
                                     DropdownButtonFormField<String>(
-                                      value: _selectedContainer,
+                                      initialValue: _selectedContainer,
                                       decoration: const InputDecoration(
                                         labelText: 'Container',
                                         prefixIcon: Icon(Icons.local_cafe),

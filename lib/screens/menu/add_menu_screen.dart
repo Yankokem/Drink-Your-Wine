@@ -17,7 +17,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  List<Map<String, dynamic>> _selectedItems = [];
+  final List<Map<String, dynamic>> _selectedItems = [];
 
   double get _totalItemsPrice {
     return _selectedItems.fold(
@@ -58,7 +58,7 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
-                  value: selectedItem,
+                  initialValue: selectedItem,
                   decoration: const InputDecoration(
                     labelText: 'Select Item',
                     prefixIcon: Icon(Icons.coffee),

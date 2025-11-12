@@ -73,7 +73,7 @@ class _EditMenuScreenState extends State<EditMenuScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
-                  value: selectedItem,
+                  initialValue: selectedItem,
                   decoration: const InputDecoration(
                     labelText: 'Select Item',
                     prefixIcon: Icon(Icons.coffee),

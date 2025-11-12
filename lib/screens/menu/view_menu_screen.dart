@@ -135,12 +135,12 @@ class ViewMenuScreen extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Row(
+                                          const Row(
                                             children: [
-                                              const Icon(Icons.info_outline,
+                                              Icon(Icons.info_outline,
                                                   size: 24),
-                                              const SizedBox(width: 12),
-                                              const Text(
+                                              SizedBox(width: 12),
+                                              Text(
                                                 'Basic Information',
                                                 style: TextStyle(
                                                   fontSize: 18,

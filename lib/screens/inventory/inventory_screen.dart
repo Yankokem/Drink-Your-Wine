@@ -385,7 +385,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 // Category Filter
                                 Expanded(
                                   child: DropdownButtonFormField<String>(
-                                    value: _selectedCategory,
+                                    initialValue: _selectedCategory,
                                     decoration: InputDecoration(
                                       labelText: 'Category',
                                       border: OutlineInputBorder(
@@ -410,7 +410,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                                 // Status Filter
                                 Expanded(
                                   child: DropdownButtonFormField<String>(
-                                    value: _selectedStatus,
+                                    initialValue: _selectedStatus,
                                     decoration: InputDecoration(
                                       labelText: 'Status',
                                       border: OutlineInputBorder(

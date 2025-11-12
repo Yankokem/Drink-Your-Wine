@@ -64,7 +64,7 @@ class _IngredientSelectorFormState extends State<IngredientSelectorForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              value: _selectedIngredient,
+              initialValue: _selectedIngredient,
               decoration: const InputDecoration(
                 labelText: 'Ingredient',
                 prefixIcon: Icon(Icons.inventory_2),

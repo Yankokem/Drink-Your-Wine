@@ -160,7 +160,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
                                     // Category
                                     DropdownButtonFormField<String>(
-                                      value: null,
+                                      initialValue: null,
                                       decoration: const InputDecoration(
                                         labelText: 'Category',
                                         prefixIcon: Icon(Icons.category),
@@ -303,7 +303,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                                 child:
                                                     DropdownButtonFormField<
                                                         String>(
-                                                  value: _selectedUnit,
+                                                  initialValue: _selectedUnit,
                                                   decoration:
                                                       const InputDecoration(
                                                     labelText: 'Unit',
