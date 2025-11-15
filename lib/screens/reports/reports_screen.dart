@@ -13,59 +13,47 @@ class ReportsScreen extends StatefulWidget {
 
 class _ReportsScreenState extends State<ReportsScreen> {
   String _selectedReport = 'sales'; // 'sales', 'inventory', 'employees'
-  DateTimeRange? _dateRange;
-  String _selectedPeriod = 'today'; // 'today', 'week', 'month', 'custom'
+  String _salesType = 'internal'; // 'internal', 'external'
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   @override
   void initState() {
     super.initState();
-    _setDateRangeForPeriod('today');
-  }
-
-  void _setDateRangeForPeriod(String period) {
+    // Set default dates to today
     final now = DateTime.now();
-    setState(() {
-      _selectedPeriod = period;
-      switch (period) {
-        case 'today':
-          _dateRange = DateTimeRange(
-            start: DateTime(now.year, now.month, now.day),
-            end: now,
-          );
-          break;
-        case 'week':
-          _dateRange = DateTimeRange(
-            start: now.subtract(const Duration(days: 7)),
-            end: now,
-          );
-          break;
-        case 'month':
-          _dateRange = DateTimeRange(
-            start: DateTime(now.year, now.month, 1),
-            end: now,
-          );
-          break;
-        case 'year':
-          _dateRange = DateTimeRange(
-            start: DateTime(now.year, 1, 1),
-            end: now,
-          );
-          break;
-      }
-    });
+    _startDate = DateTime(now.year, now.month, now.day);
+    _endDate = now;
   }
 
-  Future<void> _selectCustomDateRange() async {
-    final picked = await showDateRangePicker(
+  Future<void> _selectStartDate() async {
+    final picked = await showDatePicker(
       context: context,
+      initialDate: _startDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      initialDateRange: _dateRange,
     );
     if (picked != null) {
       setState(() {
-        _selectedPeriod = 'custom';
-        _dateRange = picked;
+        _startDate = picked;
+        // If end date is before start date, adjust it
+        if (_endDate != null && _endDate!.isBefore(picked)) {
+          _endDate = picked;
+        }
+      });
+    }
+  }
+
+  Future<void> _selectEndDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _endDate ?? DateTime.now(),
+      firstDate: _startDate ?? DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _endDate = picked;
       });
     }
   }
@@ -82,6 +70,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Row(
         children: [
@@ -136,72 +126,91 @@ class _ReportsScreenState extends State<ReportsScreen> {
                               ),
                             ),
                             const SizedBox(width: 24),
-                            // Date Filter
-                            Row(
-                              children: [
-                                _PeriodButton(
-                                  label: 'Today',
-                                  isSelected: _selectedPeriod == 'today',
-                                  onTap: () => _setDateRangeForPeriod('today'),
+
+                            // Date Filter - Only for Sales and Employee reports
+                            if (_selectedReport != 'inventory') ...[
+                              // Start Date
+                              OutlinedButton.icon(
+                                onPressed: _selectStartDate,
+                                icon:
+                                    const Icon(Icons.calendar_today, size: 18),
+                                label: Text(
+                                  _startDate != null
+                                      ? DateFormat('MMM d, yyyy')
+                                          .format(_startDate!)
+                                      : 'Start Date',
                                 ),
-                                const SizedBox(width: 8),
-                                _PeriodButton(
-                                  label: 'Week',
-                                  isSelected: _selectedPeriod == 'week',
-                                  onTap: () => _setDateRangeForPeriod('week'),
-                                ),
-                                const SizedBox(width: 8),
-                                _PeriodButton(
-                                  label: 'Month',
-                                  isSelected: _selectedPeriod == 'month',
-                                  onTap: () => _setDateRangeForPeriod('month'),
-                                ),
-                                const SizedBox(width: 8),
-                                _PeriodButton(
-                                  label: 'Year',
-                                  isSelected: _selectedPeriod == 'year',
-                                  onTap: () => _setDateRangeForPeriod('year'),
-                                ),
-                                const SizedBox(width: 8),
-                                OutlinedButton.icon(
-                                  onPressed: _selectCustomDateRange,
-                                  icon: const Icon(Icons.calendar_today,
-                                      size: 18),
-                                  label: Text(
-                                    _selectedPeriod == 'custom' &&
-                                            _dateRange != null
-                                        ? '${DateFormat('MMM d').format(_dateRange!.start)} - ${DateFormat('MMM d').format(_dateRange!.end)}'
-                                        : 'Custom',
-                                  ),
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: _selectedPeriod == 'custom'
-                                        ? Colors.white
-                                        : Theme.of(context).primaryColor,
-                                    backgroundColor: _selectedPeriod == 'custom'
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.transparent,
-                                    side: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      Theme.of(context).primaryColor,
+                                  side: BorderSide(
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                ElevatedButton.icon(
-                                  onPressed: _exportReport,
-                                  icon:
-                                      const Icon(Icons.file_download, size: 20),
-                                  label: const Text('Export'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Theme.of(context).primaryColor,
-                                    foregroundColor: Colors.white,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text('to',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w500)),
+                              const SizedBox(width: 8),
+                              // End Date
+                              OutlinedButton.icon(
+                                onPressed: _selectEndDate,
+                                icon:
+                                    const Icon(Icons.calendar_today, size: 18),
+                                label: Text(
+                                  _endDate != null
+                                      ? DateFormat('MMM d, yyyy')
+                                          .format(_endDate!)
+                                      : 'End Date',
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      Theme.of(context).primaryColor,
+                                  side: BorderSide(
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
-                              ],
+                              ),
+                              const SizedBox(width: 16),
+                            ],
+
+                            ElevatedButton.icon(
+                              onPressed: _exportReport,
+                              icon: const Icon(Icons.file_download, size: 20),
+                              label: const Text('Export'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: Colors.white,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 24),
+
+                        // Sales Type Toggle (only for sales report)
+                        if (_selectedReport == 'sales') ...[
+                          Row(
+                            children: [
+                              _SalesTypeButton(
+                                label: 'Internal Sales',
+                                isSelected: _salesType == 'internal',
+                                onTap: () => setState(() {
+                                  _salesType = 'internal';
+                                }),
+                              ),
+                              const SizedBox(width: 12),
+                              _SalesTypeButton(
+                                label: 'External Sales',
+                                isSelected: _salesType == 'external',
+                                onTap: () => setState(() {
+                                  _salesType = 'external';
+                                }),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                        ],
 
                         // Summary Cards (different for each report type)
                         if (_selectedReport == 'sales') ...[
@@ -211,7 +220,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         ] else if (_selectedReport == 'inventory') ...[
                           _buildInventorySummaryCards(),
                           const SizedBox(height: 24),
-                          _buildInventoryTable(),
+                          _buildInventoryTable(isDarkMode),
                         ] else if (_selectedReport == 'employees') ...[
                           _buildEmployeeSummaryCards(),
                           const SizedBox(height: 24),
@@ -230,37 +239,39 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildSalesSummaryCards() {
-    return const Row(
+    return Row(
       children: [
         Expanded(
-          child: _SummaryCard(
-            title: 'Total Sales',
-            value: '₱45,280.00',
+          child: _StatCard(
+            title: _salesType == 'internal'
+                ? 'Total Sales'
+                : 'Total Sales (50% Off)',
+            value: _salesType == 'internal' ? '₱45,280.00' : '₱22,640.00',
             icon: Icons.attach_money,
             color: Colors.green,
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: _SummaryCard(
+        const SizedBox(width: 16),
+        const Expanded(
+          child: _StatCard(
             title: 'Total Orders',
             value: '187',
             icon: Icons.receipt_long,
             color: Colors.blue,
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Average Order',
-            value: '₱242.14',
+            value: _salesType == 'internal' ? '₱242.14' : '₱121.07',
             icon: Icons.shopping_cart,
             color: Colors.orange,
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
-          child: _SummaryCard(
+        const SizedBox(width: 16),
+        const Expanded(
+          child: _StatCard(
             title: 'Total Items Sold',
             value: '524',
             icon: Icons.inventory,
@@ -313,18 +324,48 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     _TableHeader('Payment'),
                   ],
                 ),
-                _buildSalesRow('Nov 4, 2:45 PM', '#2025110400048', 'John Doe',
-                    '3', '₱450.00', 'Cash'),
-                _buildSalesRow('Nov 4, 2:30 PM', '#2025110400047', 'Jane Smith',
-                    '5', '₱680.00', 'Card'),
-                _buildSalesRow('Nov 4, 2:15 PM', '#2025110400046', 'John Doe',
-                    '2', '₱280.00', 'Cash'),
-                _buildSalesRow('Nov 4, 1:50 PM', '#2025110400045',
-                    'Alice Johnson', '4', '₱520.00', 'GCash'),
-                _buildSalesRow('Nov 4, 1:35 PM', '#2025110400044', 'John Doe',
-                    '6', '₱890.00', 'Card'),
-                _buildSalesRow('Nov 4, 1:20 PM', '#2025110400043', 'Jane Smith',
-                    '3', '₱420.00', 'Cash'),
+                _buildSalesRow(
+                    'Nov 4, 2:45 PM',
+                    '#2025110400048',
+                    'John Doe',
+                    '3',
+                    _salesType == 'internal' ? '₱450.00' : '₱225.00',
+                    'Cash'),
+                _buildSalesRow(
+                    'Nov 4, 2:30 PM',
+                    '#2025110400047',
+                    'Jane Smith',
+                    '5',
+                    _salesType == 'internal' ? '₱680.00' : '₱340.00',
+                    'Card'),
+                _buildSalesRow(
+                    'Nov 4, 2:15 PM',
+                    '#2025110400046',
+                    'John Doe',
+                    '2',
+                    _salesType == 'internal' ? '₱280.00' : '₱140.00',
+                    'Cash'),
+                _buildSalesRow(
+                    'Nov 4, 1:50 PM',
+                    '#2025110400045',
+                    'Alice Johnson',
+                    '4',
+                    _salesType == 'internal' ? '₱520.00' : '₱260.00',
+                    'GCash'),
+                _buildSalesRow(
+                    'Nov 4, 1:35 PM',
+                    '#2025110400044',
+                    'John Doe',
+                    '6',
+                    _salesType == 'internal' ? '₱890.00' : '₱445.00',
+                    'Card'),
+                _buildSalesRow(
+                    'Nov 4, 1:20 PM',
+                    '#2025110400043',
+                    'Jane Smith',
+                    '3',
+                    _salesType == 'internal' ? '₱420.00' : '₱210.00',
+                    'Cash'),
               ],
             ),
           ],
@@ -351,7 +392,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return const Row(
       children: [
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Total Products',
             value: '156',
             icon: Icons.inventory_2,
@@ -360,7 +401,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
         SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Low Stock Items',
             value: '8',
             icon: Icons.warning_amber,
@@ -369,7 +410,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
         SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Out of Stock',
             value: '3',
             icon: Icons.remove_circle,
@@ -378,7 +419,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
         SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Total Value',
             value: '₱128,450',
             icon: Icons.attach_money,
@@ -389,7 +430,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
-  Widget _buildInventoryTable() {
+  Widget _buildInventoryTable(bool isDarkMode) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -407,12 +448,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
             const SizedBox(height: 16),
             Table(
               columnWidths: const {
-                0: FlexColumnWidth(2),
+                0: FlexColumnWidth(2.5),
                 1: FlexColumnWidth(1.5),
-                2: FlexColumnWidth(1),
-                3: FlexColumnWidth(1),
-                4: FlexColumnWidth(1.5),
-                5: FlexColumnWidth(1),
+                2: FlexColumnWidth(1.2),
+                3: FlexColumnWidth(1.5),
+                4: FlexColumnWidth(1.2),
               },
               border: TableBorder.symmetric(
                 inside: BorderSide(color: Colors.grey.shade200),
@@ -425,24 +465,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   children: const [
                     _TableHeader('Product Name'),
                     _TableHeader('Category'),
-                    _TableHeader('Stock'),
-                    _TableHeader('Unit'),
+                    _TableHeader('Stock (pcs)'),
                     _TableHeader('Price'),
                     _TableHeader('Status'),
                   ],
                 ),
-                _buildInventoryRow('Espresso Beans', 'Coffee', '2.5', 'kg',
-                    '₱850.00', 'Low', Colors.orange),
-                _buildInventoryRow('Arabica Beans', 'Coffee', '15', 'kg',
-                    '₱1,200.00', 'In Stock', Colors.green),
-                _buildInventoryRow('Whole Milk', 'Dairy', '5', 'L', '₱280.00',
-                    'Low', Colors.orange),
-                _buildInventoryRow('Sugar', 'Supplies', '1', 'kg', '₱85.00',
-                    'Low', Colors.orange),
-                _buildInventoryRow('Paper Cups (M)', 'Packaging', '0', 'pcs',
-                    '₱2.50', 'Out', Colors.red),
-                _buildInventoryRow('Chocolate Syrup', 'Flavors', '8', 'btl',
-                    '₱320.00', 'In Stock', Colors.green),
+                _buildInventoryRow('Espresso Beans', 'Coffee', '25', '₱850.00',
+                    'Low', Colors.orange, isDarkMode),
+                _buildInventoryRow('Arabica Beans', 'Coffee', '150',
+                    '₱1,200.00', 'In Stock', Colors.green, isDarkMode),
+                _buildInventoryRow('Whole Milk', 'Dairy', '50', '₱280.00',
+                    'Low', Colors.orange, isDarkMode),
+                _buildInventoryRow('Sugar', 'Supplies', '10', '₱85.00', 'Low',
+                    Colors.orange, isDarkMode),
+                _buildInventoryRow('Paper Cups (M)', 'Packaging', '0', '₱2.50',
+                    'Out', Colors.red, isDarkMode),
+                _buildInventoryRow('Chocolate Syrup', 'Flavors', '80',
+                    '₱320.00', 'In Stock', Colors.green, isDarkMode),
               ],
             ),
           ],
@@ -452,32 +491,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   TableRow _buildInventoryRow(String name, String category, String stock,
-      String unit, String price, String status, Color statusColor) {
+      String price, String status, Color statusColor, bool isDarkMode) {
     return TableRow(
       children: [
         _TableCell(name),
         _TableCell(category),
         _TableCell(stock, fontWeight: FontWeight.bold),
-        _TableCell(unit),
         _TableCell(price),
         Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: statusColor.withOpacity(0.3)),
+          child: Text(
+            status,
+            style: TextStyle(
+              color: statusColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
-            child: Text(
-              status,
-              style: TextStyle(
-                color: statusColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
+            textAlign: TextAlign.center,
           ),
         ),
       ],
@@ -488,7 +518,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return const Row(
       children: [
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Total Employees',
             value: '24',
             icon: Icons.people,
@@ -497,7 +527,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
         SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Total Sales',
             value: '₱45,280',
             icon: Icons.trending_up,
@@ -506,7 +536,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
         SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Avg. Sales/Employee',
             value: '₱1,887',
             icon: Icons.person,
@@ -515,7 +545,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ),
         SizedBox(width: 16),
         Expanded(
-          child: _SummaryCard(
+          child: _StatCard(
             title: 'Total Hours',
             value: '192',
             icon: Icons.access_time,
@@ -549,7 +579,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 2: FlexColumnWidth(1),
                 3: FlexColumnWidth(1.5),
                 4: FlexColumnWidth(1),
-                5: FlexColumnWidth(1),
               },
               border: TableBorder.symmetric(
                 inside: BorderSide(color: Colors.grey.shade200),
@@ -565,21 +594,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     _TableHeader('Orders'),
                     _TableHeader('Total Sales'),
                     _TableHeader('Hours'),
-                    _TableHeader('Rating'),
                   ],
                 ),
                 _buildEmployeeRow(
-                    'John Doe', 'Cashier', '45', '₱12,450.00', '8.5', '4.8'),
+                    'John Doe', 'Cashier', '45', '₱12,450.00', '8.5'),
                 _buildEmployeeRow(
-                    'Jane Smith', 'Barista', '38', '₱9,680.00', '8.0', '4.9'),
+                    'Jane Smith', 'Barista', '38', '₱9,680.00', '8.0'),
                 _buildEmployeeRow(
-                    'Alice Johnson', 'Server', '32', '₱7,280.00', '7.5', '4.7'),
+                    'Alice Johnson', 'Server', '32', '₱7,280.00', '7.5'),
                 _buildEmployeeRow(
-                    'Bob Wilson', 'Cashier', '28', '₱6,520.00', '8.0', '4.6'),
+                    'Bob Wilson', 'Cashier', '28', '₱6,520.00', '8.0'),
                 _buildEmployeeRow(
-                    'Carol Brown', 'Barista', '24', '₱5,890.00', '6.5', '4.8'),
+                    'Carol Brown', 'Barista', '24', '₱5,890.00', '6.5'),
                 _buildEmployeeRow(
-                    'Dave Miller', 'Server', '20', '₱3,460.00', '6.0', '4.5'),
+                    'Dave Miller', 'Server', '20', '₱3,460.00', '6.0'),
               ],
             ),
           ],
@@ -588,8 +616,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
-  TableRow _buildEmployeeRow(String name, String position, String orders,
-      String sales, String hours, String rating) {
+  TableRow _buildEmployeeRow(
+      String name, String position, String orders, String sales, String hours) {
     return TableRow(
       children: [
         _TableCell(name),
@@ -597,20 +625,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
         _TableCell(orders),
         _TableCell(sales, fontWeight: FontWeight.bold),
         _TableCell(hours),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.star, color: Colors.amber, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                rating,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -662,12 +676,12 @@ class _ReportTypeButton extends StatelessWidget {
   }
 }
 
-class _PeriodButton extends StatelessWidget {
+class _SalesTypeButton extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _PeriodButton({
+  const _SalesTypeButton({
     required this.label,
     required this.isSelected,
     required this.onTap,
@@ -683,19 +697,20 @@ class _PeriodButton extends StatelessWidget {
         backgroundColor:
             isSelected ? Theme.of(context).primaryColor : Colors.transparent,
         side: BorderSide(color: Theme.of(context).primaryColor),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
       child: Text(label),
     );
   }
 }
 
-class _SummaryCard extends StatelessWidget {
+class _StatCard extends StatelessWidget {
   final String title;
   final String value;
   final IconData icon;
   final Color color;
 
-  const _SummaryCard({
+  const _StatCard({
     required this.title,
     required this.value,
     required this.icon,
@@ -709,31 +724,37 @@ class _SummaryCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 28),
             ),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
