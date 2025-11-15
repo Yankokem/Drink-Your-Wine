@@ -22,7 +22,7 @@ import 'package:drink_your_wine_pos/screens/pos/pos_screen.dart';
 //reports
 import 'package:drink_your_wine_pos/screens/reports/reports_screen.dart';
 import 'package:drink_your_wine_pos/screens/settings/settings_screen.dart';
-import 'package:drink_your_wine_pos/widgets/employees/audit_log_tab.dart';
+import 'package:drink_your_wine_pos/widgets/employees/activity_log_tab.dart';
 import 'package:drink_your_wine_pos/widgets/employees/attendance_tab.dart';
 import 'package:drink_your_wine_pos/widgets/employees/profile_tab.dart';
 import 'package:drink_your_wine_pos/widgets/employees/sales_history_tab.dart';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../widgets/compact_side_bar.dart';
 import '../../widgets/page_header.dart';
 
@@ -247,208 +248,204 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                               child: Column(
                                 children: [
                                   // Account Information Card
-                                  Expanded(
-                                    child: Card(
-                                      elevation: 2,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(32),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Section Header
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .primaryColor
-                                                        .withOpacity(0.1),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.lock_outline,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    size: 24,
-                                                  ),
+                                  Card(
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(32),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Section Header
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .primaryColor
+                                                      .withOpacity(0.1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
                                                 ),
-                                                const SizedBox(width: 12),
-                                                const Text(
-                                                  'Account Information',
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                child: Icon(
+                                                  Icons.lock_outline,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  size: 24,
                                                 ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 32),
-
-                                            // Username
-                                            TextFormField(
-                                              controller: _usernameController,
-                                              decoration: const InputDecoration(
-                                                labelText: 'Username',
-                                                prefixIcon:
-                                                    Icon(Icons.alternate_email),
-                                                hintText:
-                                                    'Enter unique username',
                                               ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.trim().isEmpty) {
-                                                  return 'Please enter username';
-                                                }
-                                                if (value.length < 4) {
-                                                  return 'Username must be at least 4 characters';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(height: 20),
+                                              const SizedBox(width: 12),
+                                              const Text(
+                                                'Account Information',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 32),
 
-                                            // Password
-                                            TextFormField(
-                                              controller: _passwordController,
-                                              obscureText: _obscurePassword,
-                                              decoration: InputDecoration(
-                                                labelText: 'Password',
-                                                prefixIcon:
-                                                    const Icon(Icons.lock),
-                                                suffixIcon: IconButton(
-                                                  icon: Icon(
-                                                    _obscurePassword
-                                                        ? Icons.visibility_off
-                                                        : Icons.visibility,
-                                                  ),
-                                                  onPressed: () {
+                                          // Username
+                                          TextFormField(
+                                            controller: _usernameController,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Username',
+                                              prefixIcon:
+                                                  Icon(Icons.alternate_email),
+                                              hintText: 'Enter unique username',
+                                            ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.trim().isEmpty) {
+                                                return 'Please enter username';
+                                              }
+                                              if (value.length < 4) {
+                                                return 'Username must be at least 4 characters';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(height: 20),
+
+                                          // Password
+                                          TextFormField(
+                                            controller: _passwordController,
+                                            obscureText: _obscurePassword,
+                                            decoration: InputDecoration(
+                                              labelText: 'Password',
+                                              prefixIcon:
+                                                  const Icon(Icons.lock),
+                                              suffixIcon: IconButton(
+                                                icon: Icon(
+                                                  _obscurePassword
+                                                      ? Icons.visibility_off
+                                                      : Icons.visibility,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _obscurePassword =
+                                                        !_obscurePassword;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter password';
+                                              }
+                                              if (value.length < 6) {
+                                                return 'Password must be at least 6 characters';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(height: 20),
+
+                                          // Confirm Password
+                                          TextFormField(
+                                            controller:
+                                                _confirmPasswordController,
+                                            obscureText:
+                                                _obscureConfirmPassword,
+                                            decoration: InputDecoration(
+                                              labelText: 'Confirm Password',
+                                              prefixIcon: const Icon(
+                                                  Icons.lock_outline),
+                                              suffixIcon: IconButton(
+                                                icon: Icon(
+                                                  _obscureConfirmPassword
+                                                      ? Icons.visibility_off
+                                                      : Icons.visibility,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _obscureConfirmPassword =
+                                                        !_obscureConfirmPassword;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please confirm password';
+                                              }
+                                              if (value !=
+                                                  _passwordController.text) {
+                                                return 'Passwords do not match';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(height: 32),
+
+                                          // Role Selection
+                                          const Text(
+                                            'Role',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: _RoleOption(
+                                                  label: 'Staff',
+                                                  icon: Icons.person,
+                                                  color: Colors.blue,
+                                                  isSelected:
+                                                      selectedRole == 'Staff',
+                                                  onTap: () {
                                                     setState(() {
-                                                      _obscurePassword =
-                                                          !_obscurePassword;
+                                                      selectedRole = 'Staff';
                                                     });
                                                   },
                                                 ),
                                               ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please enter password';
-                                                }
-                                                if (value.length < 6) {
-                                                  return 'Password must be at least 6 characters';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(height: 20),
-
-                                            // Confirm Password
-                                            TextFormField(
-                                              controller:
-                                                  _confirmPasswordController,
-                                              obscureText:
-                                                  _obscureConfirmPassword,
-                                              decoration: InputDecoration(
-                                                labelText: 'Confirm Password',
-                                                prefixIcon: const Icon(
-                                                    Icons.lock_outline),
-                                                suffixIcon: IconButton(
-                                                  icon: Icon(
-                                                    _obscureConfirmPassword
-                                                        ? Icons.visibility_off
-                                                        : Icons.visibility,
-                                                  ),
-                                                  onPressed: () {
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: _RoleOption(
+                                                  label: 'Manager',
+                                                  icon: Icons.manage_accounts,
+                                                  color: Colors.orange,
+                                                  isSelected:
+                                                      selectedRole == 'Manager',
+                                                  onTap: () {
                                                     setState(() {
-                                                      _obscureConfirmPassword =
-                                                          !_obscureConfirmPassword;
+                                                      selectedRole = 'Manager';
                                                     });
                                                   },
                                                 ),
                                               ),
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Please confirm password';
-                                                }
-                                                if (value !=
-                                                    _passwordController.text) {
-                                                  return 'Passwords do not match';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(height: 32),
-
-                                            // Role Selection
-                                            const Text(
-                                              'Role',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: _RoleOption(
+                                                  label: 'Admin',
+                                                  icon: Icons
+                                                      .admin_panel_settings,
+                                                  color: Colors.purple,
+                                                  isSelected:
+                                                      selectedRole == 'Admin',
+                                                  onTap: () {
+                                                    setState(() {
+                                                      selectedRole = 'Admin';
+                                                    });
+                                                  },
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: _RoleOption(
-                                                    label: 'Staff',
-                                                    icon: Icons.person,
-                                                    color: Colors.blue,
-                                                    isSelected:
-                                                        selectedRole == 'Staff',
-                                                    onTap: () {
-                                                      setState(() {
-                                                        selectedRole = 'Staff';
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Expanded(
-                                                  child: _RoleOption(
-                                                    label: 'Manager',
-                                                    icon: Icons.manage_accounts,
-                                                    color: Colors.orange,
-                                                    isSelected: selectedRole ==
-                                                        'Manager',
-                                                    onTap: () {
-                                                      setState(() {
-                                                        selectedRole =
-                                                            'Manager';
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Expanded(
-                                                  child: _RoleOption(
-                                                    label: 'Admin',
-                                                    icon: Icons
-                                                        .admin_panel_settings,
-                                                    color: Colors.purple,
-                                                    isSelected:
-                                                        selectedRole == 'Admin',
-                                                    onTap: () {
-                                                      setState(() {
-                                                        selectedRole = 'Admin';
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),

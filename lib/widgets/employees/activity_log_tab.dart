@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
 
-class ActivityLogTab extends StatelessWidget {
+class ActivityLogTab extends StatefulWidget {
   final Map<String, dynamic> employeeData;
 
   const ActivityLogTab({
     super.key,
     required this.employeeData,
   });
+
+  @override
+  State<ActivityLogTab> createState() => _ActivityLogTabState();
+}
+
+class _ActivityLogTabState extends State<ActivityLogTab> {
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +98,37 @@ class ActivityLogTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Recent activities by ${employeeData['first_name']} ${employeeData['last_name']}',
+                    'Recent activities by ${widget.employeeData['first_name']} ${widget.employeeData['last_name']}',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,
                     ),
                   ),
                 ],
+              ),
+              const Spacer(),
+              // Date filter
+              InkWell(
+                onTap: () => _selectDate(context),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                          '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}'),
+                      const SizedBox(width: 8),
+                      Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

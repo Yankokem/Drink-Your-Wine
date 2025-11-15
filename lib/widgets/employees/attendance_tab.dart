@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
 
-class AttendanceTab extends StatelessWidget {
+class AttendanceTab extends StatefulWidget {
   final Map<String, dynamic> employeeData;
 
   const AttendanceTab({
     super.key,
     required this.employeeData,
   });
+
+  @override
+  State<AttendanceTab> createState() => _AttendanceTabState();
+}
+
+class _AttendanceTabState extends State<AttendanceTab> {
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +83,15 @@ class AttendanceTab extends StatelessWidget {
       },
     ];
 
-    final presentDays = attendanceRecords.where((r) => r['status'] == 'Present').length;
-    final lateDays = attendanceRecords.where((r) => r['status'] == 'Late').length;
-    final absentDays = attendanceRecords.where((r) => r['status'] == 'Absent').length;
+    final presentDays =
+        attendanceRecords.where((r) => r['status'] == 'Present').length;
+    final lateDays =
+        attendanceRecords.where((r) => r['status'] == 'Late').length;
+    final absentDays =
+        attendanceRecords.where((r) => r['status'] == 'Absent').length;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -99,7 +123,7 @@ class AttendanceTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Time in/out records for ${employeeData['first_name']} ${employeeData['last_name']}',
+                    'Time in/out records for ${widget.employeeData['first_name']} ${widget.employeeData['last_name']}',
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 14,
@@ -107,47 +131,63 @@ class AttendanceTab extends StatelessWidget {
                   ),
                 ],
               ),
+              const Spacer(),
+              // Date filter
+              InkWell(
+                onTap: () => _selectDate(context),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                          '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}'),
+                      const SizedBox(width: 8),
+                      Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
 
           // Summary Stats
           Row(
             children: [
-              Expanded(
-                child: _StatCard(
-                  title: 'Present',
-                  value: presentDays.toString(),
-                  icon: Icons.check_circle,
-                  color: Colors.green,
-                ),
+              _StatCard(
+                title: 'Present',
+                value: presentDays.toString(),
+                icon: Icons.check_circle,
+                color: Colors.green,
               ),
               const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  title: 'Late',
-                  value: lateDays.toString(),
-                  icon: Icons.watch_later,
-                  color: Colors.orange,
-                ),
+              _StatCard(
+                title: 'Late',
+                value: lateDays.toString(),
+                icon: Icons.watch_later,
+                color: Colors.orange,
               ),
               const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  title: 'Absent',
-                  value: absentDays.toString(),
-                  icon: Icons.cancel,
-                  color: Colors.red,
-                ),
+              _StatCard(
+                title: 'Absent',
+                value: absentDays.toString(),
+                icon: Icons.cancel,
+                color: Colors.red,
               ),
               const SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  title: 'Total Days',
-                  value: attendanceRecords.length.toString(),
-                  icon: Icons.calendar_today,
-                  color: Colors.blue,
-                ),
+              _StatCard(
+                title: 'Total Days',
+                value: attendanceRecords.length.toString(),
+                icon: Icons.calendar_today,
+                color: Colors.blue,
               ),
             ],
           ),
@@ -231,14 +271,13 @@ class AttendanceTab extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // Table Rows
+                // Table Content
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -283,40 +322,51 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+    return Expanded(
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -386,24 +436,12 @@ class _AttendanceRow extends StatelessWidget {
           ),
           Expanded(
             flex: 2,
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(status).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  status,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: _getStatusColor(status),
-                  ),
-                ),
+            child: Text(
+              status,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: _getStatusColor(status),
               ),
             ),
           ),
