@@ -19,6 +19,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAvailable = status.toLowerCase() == 'available';
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
       elevation: 2,
@@ -32,10 +33,10 @@ class ProductCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              // Product Image
+              // Product Image - Bigger size
               Container(
-                width: 80,
-                height: 80,
+                width: 110,
+                height: 110,
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -49,19 +50,21 @@ class ProductCard extends StatelessWidget {
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
                               Icons.image_not_supported,
-                              size: 40,
-                              color: Theme.of(context).primaryColor.withOpacity(0.5),
+                              size: 50,
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.5),
                             );
                           },
                         ),
                       )
                     : Icon(
                         Icons.local_cafe,
-                        size: 40,
+                        size: 50,
                         color: Theme.of(context).primaryColor.withOpacity(0.5),
                       ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               // Product Info
               Expanded(
                 child: Column(
@@ -74,14 +77,14 @@ class ProductCard extends StatelessWidget {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
-                        vertical: 2,
+                        vertical: 3,
                       ),
                       decoration: BoxDecoration(
                         color: isAvailable
@@ -98,11 +101,11 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       '₱$price',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).primaryColor,
                       ),

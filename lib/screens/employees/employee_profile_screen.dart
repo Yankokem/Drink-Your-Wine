@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/compact_side_bar.dart';
 import '../../widgets/page_header.dart';
-import '../../widgets/employees/activity_log_tab.dart';
+import '../../widgets/employees/audit_log_tab.dart';
 import '../../widgets/employees/attendance_tab.dart';
 import '../../widgets/employees/profile_tab.dart';
 import '../../widgets/employees/sales_history_tab.dart';

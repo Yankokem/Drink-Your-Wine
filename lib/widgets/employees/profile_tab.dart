@@ -16,18 +16,36 @@ class _ProfileTabState extends State<ProfileTab> {
   bool _isPasswordVisible = false;
 
   Color getRoleColor() {
-    return widget.employeeData['role']?.toLowerCase() == 'admin'
-        ? Colors.purple
-        : Colors.blue;
+    final role = widget.employeeData['role']?.toLowerCase() ?? 'staff';
+    switch (role) {
+      case 'admin':
+        return Colors.purple;
+      case 'manager':
+        return Colors.orange;
+      default:
+        return Colors.blue;
+    }
   }
 
-  void _deleteEmployee() {
+  IconData getRoleIcon() {
+    final role = widget.employeeData['role']?.toLowerCase() ?? 'staff';
+    switch (role) {
+      case 'admin':
+        return Icons.admin_panel_settings;
+      case 'manager':
+        return Icons.manage_accounts;
+      default:
+        return Icons.person;
+    }
+  }
+
+  void _deactivateEmployee() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Employee'),
+        title: const Text('Deactivate Employee'),
         content: Text(
-          'Are you sure you want to delete ${widget.employeeData['first_name']} ${widget.employeeData['last_name']}? This action cannot be undone.',
+          'Are you sure you want to deactivate ${widget.employeeData['first_name']} ${widget.employeeData['last_name']}? This will prevent them from accessing the system.',
         ),
         actions: [
           TextButton(
@@ -36,20 +54,20 @@ class _ProfileTabState extends State<ProfileTab> {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO: Implement delete functionality
+              // TODO: Implement deactivate functionality
               Navigator.pop(context); // Close dialog
               Navigator.pop(context); // Go back to employee list
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Employee deleted successfully'),
+                  content: Text('Employee deactivated successfully'),
                   backgroundColor: Colors.green,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.orange,
             ),
-            child: const Text('Delete'),
+            child: const Text('Deactivate'),
           ),
         ],
       ),
@@ -136,10 +154,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            widget.employeeData['role']?.toLowerCase() ==
-                                    'admin'
-                                ? Icons.admin_panel_settings
-                                : Icons.person,
+                            getRoleIcon(),
                             size: 20,
                             color: getRoleColor(),
                           ),
@@ -187,11 +202,11 @@ class _ProfileTabState extends State<ProfileTab> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _deleteEmployee,
-                            icon: const Icon(Icons.delete),
-                            label: const Text('Delete'),
+                            onPressed: _deactivateEmployee,
+                            icon: const Icon(Icons.block),
+                            label: const Text('Deactivate'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.orange,
                               padding: const EdgeInsets.symmetric(
                                 vertical: 16,
                               ),
@@ -270,6 +285,16 @@ class _ProfileTabState extends State<ProfileTab> {
                           value: widget.employeeData['contact'] ?? 'N/A',
                           icon: Icons.phone,
                         ),
+                        const SizedBox(height: 16),
+                        _InfoRow(
+                          label: 'Date Hired',
+                          value: widget.employeeData['date_hired'] != null
+                              ? widget.employeeData['date_hired']
+                                  .toString()
+                                  .substring(0, 10)
+                              : 'N/A',
+                          icon: Icons.calendar_today,
+                        ),
                       ],
                     ),
                   ),
@@ -337,6 +362,17 @@ class _ProfileTabState extends State<ProfileTab> {
                             });
                           },
                         ),
+                        const SizedBox(height: 16),
+                        _InfoRow(
+                          label: 'Status',
+                          value: widget.employeeData['status'] ?? 'Active',
+                          icon: Icons.info_outline,
+                          valueColor:
+                              widget.employeeData['status']?.toLowerCase() ==
+                                      'active'
+                                  ? Colors.green
+                                  : Colors.red,
+                        ),
                       ],
                     ),
                   ),
@@ -354,11 +390,13 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final Color? valueColor;
 
   const _InfoRow({
     required this.label,
     required this.value,
     required this.icon,
+    this.valueColor,
   });
 
   @override
@@ -386,9 +424,10 @@ class _InfoRow extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
+                  color: valueColor,
                 ),
               ),
             ],

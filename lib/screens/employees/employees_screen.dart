@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/compact_side_bar.dart';
-import '../../widgets/employees/employee_card.dart';
 import '../../widgets/page_header.dart';
 
 class EmployeesScreen extends StatefulWidget {
@@ -26,6 +25,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'password': 'encrypted_password_hash',
       'contact': '09171234567',
       'role': 'Admin',
+      'status': 'Active',
     },
     {
       'user_id': 2,
@@ -35,6 +35,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'password': 'encrypted_password_hash',
       'contact': '09187654321',
       'role': 'Staff',
+      'status': 'Active',
     },
     {
       'user_id': 3,
@@ -44,6 +45,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'password': 'encrypted_password_hash',
       'contact': '09191234567',
       'role': 'Staff',
+      'status': 'Inactive',
     },
     {
       'user_id': 4,
@@ -53,6 +55,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'password': 'encrypted_password_hash',
       'contact': '09161234567',
       'role': 'Admin',
+      'status': 'Active',
     },
     {
       'user_id': 5,
@@ -62,6 +65,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'password': 'encrypted_password_hash',
       'contact': '09151234567',
       'role': 'Staff',
+      'status': 'Active',
     },
     {
       'user_id': 6,
@@ -71,6 +75,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       'password': 'encrypted_password_hash',
       'contact': '09141234567',
       'role': 'Staff',
+      'status': 'Inactive',
     },
   ];
 
@@ -165,6 +170,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                                   // Search Bar
                                   Expanded(
                                     child: TextField(
+                                      enabled: selectedTab == 'Employees',
                                       decoration: InputDecoration(
                                         hintText: 'Search employees...',
                                         prefixIcon: const Icon(Icons.search),
@@ -206,14 +212,17 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                                           .map((String value) {
                                         return DropdownMenuItem<String>(
                                           value: value,
+                                          enabled: selectedTab == 'Employees',
                                           child: Text('Sort by: $value'),
                                         );
                                       }).toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          sortBy = value!;
-                                        });
-                                      },
+                                      onChanged: selectedTab == 'Employees'
+                                          ? (value) {
+                                              setState(() {
+                                                sortBy = value!;
+                                              });
+                                            }
+                                          : null,
                                     ),
                                   ),
                                   const SizedBox(width: 16),
@@ -258,68 +267,203 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
   Widget _buildTabContent() {
     switch (selectedTab) {
       case 'Employees':
-        return _buildEmployeesGrid();
+        return _buildEmployeesTable();
       case 'Attendance':
         return _buildAttendanceView();
       case 'Activity Log':
         return _buildActivityLogView();
       default:
-        return _buildEmployeesGrid();
+        return _buildEmployeesTable();
     }
   }
 
-  Widget _buildEmployeesGrid() {
-    if (filteredEmployees.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.people_outline,
-              size: 64,
-              color: Colors.grey.shade300,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No employees found',
-              style: TextStyle(
-                color: Colors.grey.shade500,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return GridView.builder(
+  Widget _buildEmployeesTable() {
+    return Padding(
       padding: const EdgeInsets.all(24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 4,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.people,
+                  color: Theme.of(context).primaryColor,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Employees',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'All registered employees',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Employees Table
+          Expanded(
+            child: filteredEmployees.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.people_outline,
+                          size: 64,
+                          color: Colors.grey.shade300,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No employees found',
+                          style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        // Table Header
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                            ),
+                          ),
+                          child: const Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  'ID',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  'Name',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Username',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Position',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Contact Number',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Status',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Table Content
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: filteredEmployees.length,
+                            separatorBuilder: (context, index) => Divider(
+                              height: 1,
+                              color: Colors.grey.shade200,
+                            ),
+                            itemBuilder: (context, index) {
+                              final employee = filteredEmployees[index];
+                              return _EmployeeRow(
+                                userId: employee['user_id'],
+                                name:
+                                    '${employee['first_name']} ${employee['last_name']}',
+                                username: employee['username'],
+                                position: employee['role'],
+                                contact: employee['contact'],
+                                status: employee['status'],
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/employees/profile',
+                                    arguments: employee,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
       ),
-      itemCount: filteredEmployees.length,
-      itemBuilder: (context, index) {
-        final employee = filteredEmployees[index];
-        return EmployeeCard(
-          userId: employee['user_id'],
-          firstName: employee['first_name'],
-          lastName: employee['last_name'],
-          username: employee['username'],
-          role: employee['role'],
-          contact: employee['contact'],
-          isSelected: false,
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              '/employees/profile',
-              arguments: employee,
-            );
-          },
-        );
-      },
     );
   }
 
@@ -328,6 +472,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
     final attendanceData = [
       {
         'employee': 'John Doe',
+        'position': 'Admin',
         'date': '2024-11-06',
         'check_in': '08:45 AM',
         'check_out': '05:15 PM',
@@ -336,6 +481,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       },
       {
         'employee': 'Jane Smith',
+        'position': 'Staff',
         'date': '2024-11-06',
         'check_in': '09:00 AM',
         'check_out': '06:00 PM',
@@ -344,6 +490,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       },
       {
         'employee': 'Michael Johnson',
+        'position': 'Staff',
         'date': '2024-11-06',
         'check_in': '08:30 AM',
         'check_out': '04:45 PM',
@@ -352,6 +499,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       },
       {
         'employee': 'Sarah Williams',
+        'position': 'Admin',
         'date': '2024-11-06',
         'check_in': '--',
         'check_out': '--',
@@ -360,6 +508,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       },
       {
         'employee': 'David Brown',
+        'position': 'Staff',
         'date': '2024-11-06',
         'check_in': '10:15 AM',
         'check_out': '06:30 PM',
@@ -368,6 +517,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
       },
       {
         'employee': 'Emily Davis',
+        'position': 'Staff',
         'date': '2024-11-06',
         'check_in': '08:55 AM',
         'check_out': '05:30 PM',
@@ -441,33 +591,6 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
           ),
           const SizedBox(height: 24),
 
-          // Stats Cards
-          const Row(
-            children: [
-              _AttendanceStatCard(
-                title: 'Present',
-                count: '4',
-                color: Colors.green,
-                icon: Icons.check_circle,
-              ),
-              SizedBox(width: 16),
-              _AttendanceStatCard(
-                title: 'Late',
-                count: '1',
-                color: Colors.orange,
-                icon: Icons.schedule,
-              ),
-              SizedBox(width: 16),
-              _AttendanceStatCard(
-                title: 'Absent',
-                count: '1',
-                color: Colors.red,
-                icon: Icons.cancel,
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
           // Attendance Table
           Expanded(
             child: Card(
@@ -493,6 +616,16 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                           flex: 2,
                           child: Text(
                             'Employee',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Position',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -565,6 +698,7 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                         final attendance = attendanceData[index];
                         return _AttendanceRow(
                           employee: attendance['employee'] as String,
+                          position: attendance['position'] as String,
                           date: attendance['date'] as String,
                           checkIn: attendance['check_in'] as String,
                           checkOut: attendance['check_out'] as String,
@@ -670,6 +804,26 @@ class _EmployeesScreenState extends State<EmployeesScreen> {
                     ),
                   ),
                 ],
+              ),
+              const Spacer(),
+              // Date filter
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.calendar_today, size: 16),
+                    const SizedBox(width: 8),
+                    const Text('2024-11-06'),
+                    const SizedBox(width: 8),
+                    Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+                  ],
+                ),
               ),
             ],
           ),
@@ -815,66 +969,108 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-class _AttendanceStatCard extends StatelessWidget {
-  final String title;
-  final String count;
-  final Color color;
-  final IconData icon;
+class _EmployeeRow extends StatelessWidget {
+  final int userId;
+  final String name;
+  final String username;
+  final String position;
+  final String contact;
+  final String status;
+  final VoidCallback onTap;
 
-  const _AttendanceStatCard({
-    required this.title,
-    required this.count,
-    required this.color,
-    required this.icon,
+  const _EmployeeRow({
+    required this.userId,
+    required this.name,
+    required this.username,
+    required this.position,
+    required this.contact,
+    required this.status,
+    required this.onTap,
   });
+
+  Color _getStatusColor(String status) {
+    return status.toLowerCase() == 'active' ? Colors.green : Colors.red;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            // ID
+            Expanded(
+              flex: 1,
+              child: Text(
+                userId.toString(),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    count,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
+            ),
+
+            // Name
+            Expanded(
+              flex: 3,
+              child: Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ],
-          ),
+            ),
+
+            // Username
+            Expanded(
+              flex: 2,
+              child: Text(
+                username,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ),
+
+            // Position
+            Expanded(
+              flex: 2,
+              child: Text(
+                position,
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+
+            // Contact Number
+            Expanded(
+              flex: 2,
+              child: Text(
+                contact,
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+
+            // Status
+            Expanded(
+              flex: 2,
+              child: Text(
+                status,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: _getStatusColor(status),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -883,6 +1079,7 @@ class _AttendanceStatCard extends StatelessWidget {
 
 class _AttendanceRow extends StatelessWidget {
   final String employee;
+  final String position;
   final String date;
   final String checkIn;
   final String checkOut;
@@ -891,6 +1088,7 @@ class _AttendanceRow extends StatelessWidget {
 
   const _AttendanceRow({
     required this.employee,
+    required this.position,
     required this.date,
     required this.checkIn,
     required this.checkOut,
@@ -926,6 +1124,15 @@ class _AttendanceRow extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
+            ),
+          ),
+
+          // Position
+          Expanded(
+            flex: 2,
+            child: Text(
+              position,
+              style: const TextStyle(fontSize: 14),
             ),
           ),
 
@@ -977,26 +1184,12 @@ class _AttendanceRow extends StatelessWidget {
           // Status
           Expanded(
             flex: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: _getStatusColor(status).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _getStatusColor(status).withOpacity(0.3),
-                ),
-              ),
-              child: Text(
-                status,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: _getStatusColor(status),
-                ),
-                textAlign: TextAlign.center,
+            child: Text(
+              status,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: _getStatusColor(status),
               ),
             ),
           ),

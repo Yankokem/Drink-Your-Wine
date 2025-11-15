@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../widgets/compact_side_bar.dart';
 import '../../widgets/page_header.dart';
-import '../../widgets/product_card.dart';
+import '../../widgets/pos/payment_dialog.dart';
+import '../../widgets/pos/product_card.dart';
 
 class POSScreen extends StatefulWidget {
   const POSScreen({super.key});
@@ -15,9 +17,10 @@ class _POSScreenState extends State<POSScreen> {
   String selectedCategory = 'All';
   String searchQuery = '';
   String sortBy = 'Name';
-  
+
   final List<Map<String, dynamic>> cartItems = [];
   String paymentMethod = 'Cash';
+  String orderType = 'In-Store';
 
   // Sample products data
   final List<Map<String, dynamic>> products = [
@@ -73,8 +76,8 @@ class _POSScreenState extends State<POSScreen> {
 
   List<Map<String, dynamic>> get filteredProducts {
     var filtered = products.where((product) {
-      final matchesCategory = selectedCategory == 'All' || 
-                              product['category'] == selectedCategory;
+      final matchesCategory =
+          selectedCategory == 'All' || product['category'] == selectedCategory;
       final matchesSearch = product['name']
           .toString()
           .toLowerCase()
@@ -142,8 +145,26 @@ class _POSScreenState extends State<POSScreen> {
     });
   }
 
+  void _showPaymentDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => PaymentDialog(
+        total: total,
+        onConfirm: () {
+          clearCart();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        isDarkMode ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5);
+    final cardColor = isDarkMode ? const Color(0xFF2D2D2D) : Colors.white;
+
     return Scaffold(
       body: Row(
         children: [
@@ -165,13 +186,13 @@ class _POSScreenState extends State<POSScreen> {
                       Expanded(
                         flex: 3,
                         child: Container(
-                          color: const Color(0xFFF5F5F5),
+                          color: backgroundColor,
                           child: Column(
                             children: [
                               // Tab & Controls
                               Container(
                                 padding: const EdgeInsets.all(24),
-                                color: Colors.white,
+                                color: cardColor,
                                 child: Column(
                                   children: [
                                     // Products / Services Tabs
@@ -206,14 +227,17 @@ class _POSScreenState extends State<POSScreen> {
                                           child: TextField(
                                             decoration: InputDecoration(
                                               hintText: 'Search products...',
-                                              prefixIcon: const Icon(Icons.search),
+                                              prefixIcon:
+                                                  const Icon(Icons.search),
                                               filled: true,
-                                              fillColor: const Color(0xFFF5F5F5),
+                                              fillColor: backgroundColor,
                                               border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                                 borderSide: BorderSide.none,
                                               ),
-                                              contentPadding: const EdgeInsets.symmetric(
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
                                                 horizontal: 16,
                                                 vertical: 12,
                                               ),
@@ -231,8 +255,9 @@ class _POSScreenState extends State<POSScreen> {
                                             horizontal: 16,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFFF5F5F5),
-                                            borderRadius: BorderRadius.circular(8),
+                                            color: backgroundColor,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
                                           child: DropdownButton<String>(
                                             value: sortBy,
@@ -296,7 +321,8 @@ class _POSScreenState extends State<POSScreen> {
                                       const SizedBox(width: 12),
                                       _CategoryButton(
                                         label: 'Pastry',
-                                        isSelected: selectedCategory == 'Pastry',
+                                        isSelected:
+                                            selectedCategory == 'Pastry',
                                         onTap: () {
                                           setState(() {
                                             selectedCategory = 'Pastry';
@@ -306,7 +332,8 @@ class _POSScreenState extends State<POSScreen> {
                                       const SizedBox(width: 12),
                                       _CategoryButton(
                                         label: 'Rice Meal',
-                                        isSelected: selectedCategory == 'Rice Meal',
+                                        isSelected:
+                                            selectedCategory == 'Rice Meal',
                                         onTap: () {
                                           setState(() {
                                             selectedCategory = 'Rice Meal';
@@ -321,10 +348,12 @@ class _POSScreenState extends State<POSScreen> {
                               // Products Grid
                               Expanded(
                                 child: GridView.builder(
-                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
-                                    childAspectRatio: 2.5,
+                                    childAspectRatio: 2.2,
                                     crossAxisSpacing: 16,
                                     mainAxisSpacing: 16,
                                   ),
@@ -349,7 +378,7 @@ class _POSScreenState extends State<POSScreen> {
                       Container(
                         width: 400,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardColor,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
@@ -375,7 +404,8 @@ class _POSScreenState extends State<POSScreen> {
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text(
                                           'Current Order',
@@ -398,7 +428,8 @@ class _POSScreenState extends State<POSScreen> {
                                     child: cartItems.isEmpty
                                         ? Center(
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Icon(
                                                   Icons.shopping_cart_outlined,
@@ -426,7 +457,9 @@ class _POSScreenState extends State<POSScreen> {
                                                 price: item['price'],
                                                 quantity: item['quantity'],
                                                 onAdd: () => addToCart(item),
-                                                onRemove: () => removeFromCart(index),
+                                                onRemove: () =>
+                                                    removeFromCart(index),
+                                                isDarkMode: isDarkMode,
                                               );
                                             },
                                           ),
@@ -439,7 +472,7 @@ class _POSScreenState extends State<POSScreen> {
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF5F5F5),
+                                color: backgroundColor,
                                 border: Border(
                                   top: BorderSide(
                                     color: Colors.grey.shade200,
@@ -450,7 +483,8 @@ class _POSScreenState extends State<POSScreen> {
                                 children: [
                                   // Subtotal
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         'Subtotal',
@@ -468,7 +502,8 @@ class _POSScreenState extends State<POSScreen> {
                                   const SizedBox(height: 8),
                                   // Tax
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         'Tax (12%)',
@@ -486,7 +521,8 @@ class _POSScreenState extends State<POSScreen> {
                                   const Divider(height: 24),
                                   // Total
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text(
                                         'Total',
@@ -506,6 +542,64 @@ class _POSScreenState extends State<POSScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 20),
+
+                                  // Order Type Dropdown
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
+                                    ),
+                                    child: DropdownButton<String>(
+                                      value: orderType,
+                                      isExpanded: true,
+                                      underline: const SizedBox(),
+                                      items: [
+                                        'In-Store',
+                                        'Grab',
+                                        'FoodPanda',
+                                        'Takeout'
+                                      ].map((String value) {
+                                        IconData icon;
+                                        switch (value) {
+                                          case 'In-Store':
+                                            icon = Icons.store;
+                                            break;
+                                          case 'Grab':
+                                          case 'FoodPanda':
+                                            icon = Icons.delivery_dining;
+                                            break;
+                                          case 'Takeout':
+                                            icon = Icons.takeout_dining;
+                                            break;
+                                          default:
+                                            icon = Icons.shopping_bag;
+                                        }
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Row(
+                                            children: [
+                                              Icon(icon, size: 20),
+                                              const SizedBox(width: 12),
+                                              Text(value),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          orderType = value!;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+
                                   // Payment Method
                                   Container(
                                     padding: const EdgeInsets.symmetric(
@@ -513,9 +607,10 @@ class _POSScreenState extends State<POSScreen> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: cardColor,
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey.shade300),
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
                                     ),
                                     child: DropdownButton<String>(
                                       value: paymentMethod,
@@ -554,35 +649,11 @@ class _POSScreenState extends State<POSScreen> {
                                     child: ElevatedButton(
                                       onPressed: cartItems.isEmpty
                                           ? null
-                                          : () {
-                                              // Handle checkout
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => AlertDialog(
-                                                  title: const Text('Confirm Order'),
-                                                  content: Text(
-                                                    'Total: ₱${total.toStringAsFixed(2)}\n'
-                                                    'Payment Method: $paymentMethod',
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () => Navigator.pop(context),
-                                                      child: const Text('Cancel'),
-                                                    ),
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        clearCart();
-                                                      },
-                                                      child: const Text('Confirm'),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            },
+                                          : _showPaymentDialog,
                                       style: ElevatedButton.styleFrom(
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                       ),
                                       child: const Text(
@@ -673,9 +744,8 @@ class _CategoryButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected
-            ? Theme.of(context).primaryColor
-            : Colors.white,
+        backgroundColor:
+            isSelected ? Theme.of(context).primaryColor : Colors.white,
         foregroundColor: isSelected ? Colors.white : Colors.black87,
         elevation: isSelected ? 2 : 0,
         side: BorderSide(
@@ -708,6 +778,7 @@ class _CartItem extends StatelessWidget {
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final bool isDarkMode;
 
   const _CartItem({
     required this.name,
@@ -715,17 +786,19 @@ class _CartItem extends StatelessWidget {
     required this.quantity,
     required this.onAdd,
     required this.onRemove,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
     final itemTotal = double.parse(price) * quantity;
+    final cardColor = isDarkMode ? const Color(0xFF2D2D2D) : Colors.white;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey.shade200),
       ),
